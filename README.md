@@ -24,6 +24,6 @@ Zaibten Police Management System is a comprehensive, full-stack solution designe
 ## 📬 Contact
 For suggestions or collaboration:
 
-Zaibten Development Team
+Contact Zaibten Development Team
 📧 support@zaibteninfo.com
 🌐 https://zaibteninfo.com/
