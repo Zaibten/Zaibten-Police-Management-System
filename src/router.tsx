@@ -29,13 +29,13 @@ const router = createBrowserRouter([
 {
   path: 'Stations',  // matches /Stations
   lazy: async () => ({
-    Component: (await import('./pages/Stations')).default,
+    Component: (await import('./pages/stations')).default,
   }),
 },
 {
   path: 'Stations/add-Stations',
   lazy: async () => ({
-    Component: (await import('./pages/Stations/add-Stations')).default,
+    Component: (await import('./pages/stations/add-Stations')).default,
   }),
 },
 

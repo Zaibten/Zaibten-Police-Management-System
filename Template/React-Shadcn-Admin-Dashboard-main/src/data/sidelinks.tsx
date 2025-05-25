@@ -1,4 +1,4 @@
-import { IconBrandProducthunt, IconCalendarWeek, IconChecklist, IconHelpHexagon, IconHexagonNumber1, IconHexagonNumber2, IconHexagonNumber3, IconHexagonNumber4, IconHexagonNumber5, IconHome, IconLayoutDashboard, IconLayoutKanban, IconMessages, IconSettings, IconShoppingCart, IconUserShield } from "@tabler/icons-react"
+import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHexagonNumber2, IconHexagonNumber3, IconHexagonNumber4, IconHexagonNumber5, IconHome, IconLayoutDashboard, IconLayoutKanban, IconMessages, IconSettings, IconShoppingCart, IconUserShield } from "@tabler/icons-react"
 import { User2Icon } from "lucide-react"
 
 
@@ -65,12 +65,6 @@ export const sidelinks: SideLink[] = [
     icon: <IconShoppingCart size={18} />,
   },
   {
-    title: 'Calendar',
-    label: '',
-    href: '/calendar',
-    icon: <IconCalendarWeek size={18} />,
-  },
-  {
     title: 'Email',
     label: '',
     href: '/emails',
@@ -97,12 +91,7 @@ export const sidelinks: SideLink[] = [
     href: '/tasks',
     icon: <IconChecklist size={18} />,
   },
-  {
-    title: 'Supports',
-    label: '',
-    href: '/supports',
-    icon: <IconHelpHexagon size={18} />,
-  },
+  
   {
     title: 'Authentication',
     label: '',
