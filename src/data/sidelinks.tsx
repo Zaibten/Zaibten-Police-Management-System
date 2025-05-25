@@ -75,26 +75,13 @@ export const sidelinks: SideLink[] = [
   ],
 },
 
-    {
+{
     title: 'Duties',
     label: '',
-    href: '',
+    href: '/duty',
     icon: <IconUser size={18} />,
-    sub: [
-      {
-        title: 'Duties',
-        label: '',
-        href: '/Duties',
-        icon: <IconBrandProducthunt size={18} />,
-      },
-      {
-        title: 'Add Duties',
-        label: '',
-        href: '/Duties/add-Duties',
-        icon: <IconHexagonNumber1 size={18} />,
-      },
-    ],
   },
+
   
   // {
   //   title: 'Live Chats',

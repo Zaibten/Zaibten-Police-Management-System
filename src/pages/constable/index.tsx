@@ -17,9 +17,24 @@ export default function ConstablePage() {
 
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(constables.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentConstables = constables.slice(startIndex, startIndex + itemsPerPage);
+
+  const [searchText, setSearchText] = useState('');
+  const filteredConstables = constables.filter((c) =>
+  `${c.firstName}${c.lastName}`.toLowerCase().includes(searchText.toLowerCase())
+);
+
+const totalPages = Math.ceil(filteredConstables.length / itemsPerPage);
+const startIndex = (currentPage - 1) * itemsPerPage;
+const currentConstables = filteredConstables.slice(startIndex, startIndex + itemsPerPage);
+
+
+
+
+
+
+
+
+
 
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
@@ -83,6 +98,19 @@ export default function ConstablePage() {
           }
         `}
       </style>
+      <div className="flex justify-center mb-4">
+  <input
+    type="text"
+    placeholder="Search by full name"
+    className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    value={searchText}
+    onChange={(e) => {
+      setSearchText(e.target.value);
+      setCurrentPage(1); // reset to first page on new search
+    }}
+  />
+</div>
+
 <div className="flex items-center justify-center mt-4 space-x-2">
   <button
     onClick={goToPrevPage}
@@ -191,15 +219,13 @@ export default function ConstablePage() {
             <div className="flex flex-wrap gap-2 justify-start sm:justify-center">
               <button
                 onClick={() => handleEdit(constable)}
-                className="flex-1 min-w-[80px] rounded bg-yellow-400 px-3 py-1 text-sm font-semibold text-black shadow-sm hover:bg-yellow-500
-                  sm:flex-none sm:px-4 sm:py-2"
+                className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
               >
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(constable.id)}
-                className="flex-1 min-w-[80px] rounded bg-red-600 px-3 py-1 text-sm font-semibold text-white shadow-sm hover:bg-red-700
-                  sm:flex-none sm:px-4 sm:py-2"
+                className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
               >
                 Delete
               </button>
@@ -210,7 +236,8 @@ export default function ConstablePage() {
     </tbody>
   </table>
 </div>
-
+   <br/>
+    <br/>
       {/* Edit Modal */}
       {editConstable && (
         <dialog open className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">

@@ -52,6 +52,14 @@ const [currentCoords, setCurrentCoords] = useState<{ lat: number; lng: number } 
 const [mapLocation, setMapLocation] = useState(defaultLocationName);
 
   const [selectedStation, setSelectedStation] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Add this inside your component before pagination calculations
+const filteredStations = stations.filter(station =>
+  station.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+
 
 
 
@@ -69,10 +77,10 @@ const [, setMap] = useState<google.maps.Map | null>(null);
 const [currentPage, setCurrentPage] = useState(1);
 
 // Calculate pages
-const totalPages = Math.ceil(stations.length / itemsPerPage);
+// Update pagination calculation to use filteredStations
+const totalPages = Math.ceil(filteredStations.length / itemsPerPage);
 const startIndex = (currentPage - 1) * itemsPerPage;
-const currentStations = stations.slice(startIndex, startIndex + itemsPerPage);
-
+const currentStations = filteredStations.slice(startIndex, startIndex + itemsPerPage);
 
 
 // Pagination Handlers
@@ -382,6 +390,19 @@ const handleUpdate = () => {
   </>
 )}
 
+<br/>
+<div className="mb-4 flex justify-center">
+  <input
+    type="text"
+    placeholder="Search by police station name"
+    value={searchTerm}
+     onChange={(e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // reset to first page on new search
+  }}
+    className="border border-gray-300 rounded px-4 py-2 w-1/2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
 
 <div className="flex items-center justify-center mt-4 space-x-2">
   <button
@@ -457,6 +478,8 @@ const handleUpdate = () => {
   </table>
 </div>
 
+    <br/>
+    <br/>
 
       {/* Edit Modal */}
 {editStation && (
@@ -742,6 +765,5 @@ const handleUpdate = () => {
 )}
 
     </div>
-    
   );
 }
