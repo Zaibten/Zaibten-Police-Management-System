@@ -1,4 +1,4 @@
-import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHome, IconSettings, IconUser,} from "@tabler/icons-react"
+import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHome, IconMan, IconSettings, IconUser,} from "@tabler/icons-react"
 import { User2Icon } from "lucide-react"
 
 
@@ -49,6 +49,27 @@ export const sidelinks: SideLink[] = [
       title: 'Add New',
       label: '',
       href: '/Stations/add-Stations',
+      icon: <IconHexagonNumber1 size={18} />,
+    },
+  ],
+},
+
+  {
+  title: 'Constable',
+  label: '',
+  href: '/constable',
+  icon: <IconMan size={18} />,
+  sub: [
+    {
+      title: 'View All',
+      label: '',
+      href: '/constable',
+      icon: <IconBrandProducthunt size={18} />,
+    },
+    {
+      title: 'Add New',
+      label: '',
+      href: '/constable/add-constable',
       icon: <IconHexagonNumber1 size={18} />,
     },
   ],

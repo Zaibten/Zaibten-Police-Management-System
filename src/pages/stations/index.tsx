@@ -60,7 +60,9 @@ const [mapLocation, setMapLocation] = useState(defaultLocationName);
 // const [searchTerm, setSearchTerm] = useState('');
 // const [map, setMap] = useState<google.maps.Map | null>(null);
 
-const [map, setMap] = useState<google.maps.Map | null>(null);
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const [, setMap] = useState<google.maps.Map | null>(null);
 
 
 

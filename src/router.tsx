@@ -38,7 +38,18 @@ const router = createBrowserRouter([
     Component: (await import('./pages/stations/add-Stations')).default,
   }),
 },
-
+{
+  path: 'constable',
+  lazy: async () => ({
+    Component: (await import('./pages/constable')).default,
+  }),
+},
+{
+  path: 'constable/add-constable',
+  lazy: async () => ({
+    Component: (await import('./pages/constable/add-constable')).default,
+  }),
+},
       {
         // no path
         lazy: async () => ({
