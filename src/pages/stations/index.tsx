@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState} from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GoogleMap, Marker, useLoadScript, InfoWindow  } from '@react-google-maps/api';
 
@@ -47,7 +47,7 @@ const defaultLocationName = 'Karachi, Pakistan'; // Default location name or emp
 
 
   const [editStation, setEditStation] = useState<any>(null);
-  const mapRef = useRef<HTMLIFrameElement>(null);
+  // const mapRef = useRef<HTMLIFrameElement>(null);
 const [currentCoords, setCurrentCoords] = useState<{ lat: number; lng: number } | null>(defaultCoords);
 const [mapLocation, setMapLocation] = useState(defaultLocationName);
 
@@ -57,8 +57,11 @@ const [mapLocation, setMapLocation] = useState(defaultLocationName);
 
  const itemsPerPage = 20;
  const [markers, setMarkers] = useState<any[]>([]);
-const [searchTerm, setSearchTerm] = useState('');
+// const [searchTerm, setSearchTerm] = useState('');
+// const [map, setMap] = useState<google.maps.Map | null>(null);
+
 const [map, setMap] = useState<google.maps.Map | null>(null);
+
 
 
 const [currentPage, setCurrentPage] = useState(1);
@@ -190,12 +193,12 @@ useEffect(() => {
 
 
 // Map click handler for selecting a station marker
-const handleMarkerClick = (lat: number, lng: number) => {
-  if (map) {
-    map.panTo({ lat, lng });   // Center map on marker
-    map.setZoom(15);           // Zoom in (adjust zoom level as needed)
-  }
-};
+// const handleMarkerClick = (lat: number, lng: number) => {
+//   if (map) {
+//     map.panTo({ lat, lng });   // Center map on marker
+//     map.setZoom(15);           // Zoom in (adjust zoom level as needed)
+//   }
+// };
 
 // Map close info window handler
 const handleCloseInfoWindow = () => {
@@ -205,7 +208,8 @@ const handleCloseInfoWindow = () => {
 
 
   // Handle map click - get lat/lng from click, reverse geocode and update location textbox & map
-  const handleMapClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+  // const handleMapClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleMapClick = async () => {
     // To get lat/lng from iframe click is not possible directly.
     // Instead, we will simulate by opening a small Google Maps in new tab to select location
     // But since direct click coordinates aren't accessible, we can add a workaround:
@@ -272,9 +276,9 @@ const handleUpdate = () => {
 
 
 // When map loads, keep reference
-const onMapLoad = (mapInstance: google.maps.Map) => {
-  setMap(mapInstance);
-};
+// const onMapLoad = (mapInstance: google.maps.Map) => {
+//   setMap(mapInstance);
+// };
 
 
   return (

@@ -1,21 +1,5 @@
 import { Layout } from '@/components/custom/layout'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { RecentSales } from './components/recent-sales'
-import { Overview } from './components/overview'
-import { Charts } from './components/analytics'
-import { ReportPage } from './components/reports'
-import CustomerReviews from './components/CustomerReviews'
-import InventoryManagement from './components/InventoryManagement'
-import MarketingCampaigns from './components/MarketingCampaigns'
-import StoreLocations from './components/StoreLocations'
-import SupplierManagement from './components/SupplierManagement'
+import { Tabs,} from '@/components/ui/tabs'
 
 export default function Dashboard() {
   return (
