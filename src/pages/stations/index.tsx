@@ -2,49 +2,30 @@ import React, { useEffect, useState} from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GoogleMap, Marker, useLoadScript, InfoWindow  } from '@react-google-maps/api';
 
-
 export default function Stations() {
   const [modalVisible, setModalVisible] = React.useState(false);
   
- 
+const [stations, setStations] = useState<any[]>([]);
 
-const [stations, setStations] = useState([
-  { id: 1, name: 'Central Police Station', location: 'House #12, Abdullah Haroon Rd, Saddar, Karachi', incharge: 'SP Muhammad Ali', contact: '021-34561234', jailCapacity: 50, firsRegistered: 120, cctvCameras: 20 },
-  { id: 2, name: 'North Police Station', location: 'Building #45, Hashim Raza Rd, Model Colony, Karachi', incharge: 'SP Ayesha Khan', contact: '021-34567890', jailCapacity: 30, firsRegistered: 80, cctvCameras: 10 },
-  { id: 3, name: 'East Police Station', location: 'Plot #23, University Rd, Gulshan-e-Iqbal, Karachi', incharge: 'SP Tariq Javed', contact: '021-34987654', jailCapacity: 40, firsRegistered: 100, cctvCameras: 15 },
-  { id: 4, name: 'West Police Station', location: 'House #67, Orangi Town Sector 11, Karachi', incharge: 'SP Sana Mirza', contact: '021-34876543', jailCapacity: 35, firsRegistered: 90, cctvCameras: 18 },
-  { id: 5, name: 'South Police Station', location: 'Building #9, Khayaban-e-Seher, Clifton, Karachi', incharge: 'SP Imran Shah', contact: '021-34445566', jailCapacity: 45, firsRegistered: 110, cctvCameras: 22 },
-  { id: 6, name: 'Defence Police Station', location: 'Plot #88, DHA Phase 5, Karachi', incharge: 'SP Faiza Malik', contact: '021-34771222', jailCapacity: 50, firsRegistered: 95, cctvCameras: 25 },
-  { id: 7, name: 'Malir Police Station', location: 'House #101, Malir Cantt, Karachi', incharge: 'SP Zahid Hussain', contact: '021-34889900', jailCapacity: 40, firsRegistered: 85, cctvCameras: 17 },
-  { id: 8, name: 'Korangi Police Station', location: 'Plot #55, Korangi Industrial Area, Karachi', incharge: 'SP Nadia Qureshi', contact: '021-34998877', jailCapacity: 38, firsRegistered: 78, cctvCameras: 14 },
-  { id: 9, name: 'Landhi Police Station', location: 'House #33, Landhi No. 3, Karachi', incharge: 'SP Arif Malik', contact: '021-34112233', jailCapacity: 33, firsRegistered: 70, cctvCameras: 12 },
-  { id: 10, name: 'Gulberg Police Station', location: 'Plot #12, Gulberg Town, Karachi', incharge: 'SP Saira Jamil', contact: '021-34223344', jailCapacity: 37, firsRegistered: 73, cctvCameras: 16 },
-  { id: 11, name: 'Nazimabad Police Station', location: 'House #20, Nazimabad Sector 5, Karachi', incharge: 'SP Hassan Raza', contact: '021-34334455', jailCapacity: 44, firsRegistered: 88, cctvCameras: 19 },
-  { id: 12, name: 'Liaquatabad Police Station', location: 'Building #15, Liaquatabad Town, Karachi', incharge: 'SP Maria Farooq', contact: '021-34445566', jailCapacity: 36, firsRegistered: 77, cctvCameras: 13 },
-  { id: 13, name: 'Shah Faisal Police Station', location: 'Plot #70, Shah Faisal Colony, Karachi', incharge: 'SP Kamran Ali', contact: '021-34556677', jailCapacity: 42, firsRegistered: 90, cctvCameras: 21 },
-  { id: 14, name: 'SITE Police Station', location: 'House #44, SITE Area, Karachi', incharge: 'SP Amna Siddiqui', contact: '021-34667788', jailCapacity: 48, firsRegistered: 105, cctvCameras: 23 },
-  { id: 15, name: 'Airport Police Station', location: 'Building #2, Near Jinnah Airport, Karachi', incharge: 'SP Imran Khan', contact: '021-34778899', jailCapacity: 30, firsRegistered: 65, cctvCameras: 10 },
-  { id: 16, name: 'Lyari Police Station', location: 'Plot #60, Lyari, Karachi', incharge: 'SP Asma Iqbal', contact: '021-34889900', jailCapacity: 50, firsRegistered: 95, cctvCameras: 18 },
-  { id: 17, name: 'Garden Police Station', location: 'House #11, Garden East, Karachi', incharge: 'SP Bilal Ahmed', contact: '021-34990011', jailCapacity: 39, firsRegistered: 79, cctvCameras: 15 },
-  { id: 18, name: 'Gulistan Police Station', location: 'Building #5, Gulistan-e-Johar, Karachi', incharge: 'SP Nadia Hussain', contact: '021-34001122', jailCapacity: 43, firsRegistered: 82, cctvCameras: 20 },
-  { id: 19, name: 'New Karachi Police Station', location: 'Plot #78, New Karachi Town, Karachi', incharge: 'SP Raza Ali', contact: '021-34112233', jailCapacity: 34, firsRegistered: 68, cctvCameras: 11 },
-  { id: 20, name: 'Manzoor Colony Police Station', location: 'House #22, Manzoor Colony, Karachi', incharge: 'SP Saima Bano', contact: '021-34223344', jailCapacity: 29, firsRegistered: 60, cctvCameras: 9 },
-  { id: 21, name: 'PECHS Police Station', location: 'Building #10, PECHS Block 6, Karachi', incharge: 'SP Tariq Mahmood', contact: '021-34334455', jailCapacity: 37, firsRegistered: 72, cctvCameras: 13 },
-  { id: 22, name: 'Shahrah-e-Faisal Police Station', location: 'Plot #36, Shahrah-e-Faisal, Karachi', incharge: 'SP Kiran Fatima', contact: '021-34445566', jailCapacity: 41, firsRegistered: 86, cctvCameras: 19 },
-  { id: 23, name: 'Mehmoodabad Police Station', location: 'House #29, Mehmoodabad, Karachi', incharge: 'SP Zain Ul Abidin', contact: '021-34556677', jailCapacity: 32, firsRegistered: 69, cctvCameras: 11 },
-  { id: 24, name: 'Faisal Cantonment Police Station', location: 'Plot #80, Faisal Base, Karachi', incharge: 'SP Sanaullah Khan', contact: '021-34667788', jailCapacity: 49, firsRegistered: 108, cctvCameras: 22 },
-  { id: 25, name: 'Shah Latif Police Station', location: 'House #17, Shah Latif Town, Karachi', incharge: 'SP Shazia Malik', contact: '021-34778899', jailCapacity: 28, firsRegistered: 55, cctvCameras: 8 },
-  { id: 26, name: 'Bin Qasim Police Station', location: 'Building #66, Bin Qasim Town, Karachi', incharge: 'SP Faisal Qureshi', contact: '021-34889900', jailCapacity: 46, firsRegistered: 97, cctvCameras: 18 },
-  { id: 27, name: 'Model Colony Police Station', location: 'Plot #21, Model Colony, Karachi', incharge: 'SP Maryam Zahid', contact: '021-34990011', jailCapacity: 40, firsRegistered: 84, cctvCameras: 14 },
-  { id: 28, name: 'Safoora Police Station', location: 'House #14, Safoora Goth, Karachi', incharge: 'SP Kamal Ahmed', contact: '021-34001122', jailCapacity: 35, firsRegistered: 74, cctvCameras: 16 },
-  { id: 29, name: 'University Road Police Station', location: 'Building #9, University Road, Karachi', incharge: 'SP Adeel Riaz', contact: '021-34112233', jailCapacity: 44, firsRegistered: 91, cctvCameras: 20 },
-  { id: 30, name: 'Ancholi Police Station', location: 'Plot #50, Ancholi, Karachi', incharge: 'SP Saba Qureshi', contact: '021-34223344', jailCapacity: 31, firsRegistered: 66, cctvCameras: 12 },
-]);
-
+useEffect(() => {
+  const fetchStations = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/getpolice-stations');
+      const json = await response.json();
+      if (json.success) {
+        setStations(json.data);
+      } else {
+        console.error('Failed to load stations:', json.message);
+      }
+    } catch (err) {
+      console.error('API fetch error:', err);
+    }
+  };
+  fetchStations();
+}, []);
 
 const defaultCoords = { lat: 24.8607, lng: 67.0011 }; // Karachi center coordinates
 const defaultLocationName = 'Karachi, Pakistan'; // Default location name or empty string ''
-
 
   const [editStation, setEditStation] = useState<any>(null);
   // const mapRef = useRef<HTMLIFrameElement>(null);
@@ -70,7 +51,7 @@ const filteredStations = stations.filter(station =>
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const [, setMap] = useState<google.maps.Map | null>(null);
+// const [, setMap] = useState<google.maps.Map | null>(null);
 
 
 
@@ -97,63 +78,76 @@ const goToPrevPage = () => {
 
   // On modal open, try to auto-fetch user's current location (geolocation)
 useEffect(() => {
-  if (editStation) {
-    if (!editStation.location) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const { latitude, longitude } = pos.coords;
-            setCurrentCoords({ lat: latitude, lng: longitude });
-            const locName = await reverseGeocode(latitude, longitude);
-            setEditStation((prev: any) => ({ ...prev, location: locName || '' }));
-            setMapLocation(locName || `${latitude},${longitude}`);
-          },
-          () => {
-            setMapLocation(editStation.location || '');
-          }
-        );
-      } else {
-        setMapLocation(editStation.location || '');
-      }
+  if (editStation && !editStation.location) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setCurrentCoords({ lat: latitude, lng: longitude });
+
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await response.json();
+          const locationName = data.display_name || `${latitude}, ${longitude}`;
+
+          setEditStation((prev: any) => ({
+            ...prev,
+            location: locationName,
+          }));
+
+          setMapLocation(locationName);
+        },
+        () => {
+          setMapLocation(editStation.location || '');
+        }
+      );
     } else {
-      setMapLocation(editStation.location);
+      setMapLocation(editStation.location || '');
     }
+  } else if (editStation?.location) {
+    setMapLocation(editStation.location);
   }
 }, [editStation]);
 
+
+
   // Reverse geocode function to get location name from lat/lng
-  async function reverseGeocode(lat: number, lng: number) {
-    try {
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
-      );
-      const data = await res.json();
-      if (data.status === 'OK' && data.results.length > 0) {
-        return data.results[0].formatted_address;
-      }
-    } catch (error) {
-      console.error('Reverse geocode failed:', error);
-    }
-    return null;
-  }
+// const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
+//   try {
+//     const res = await fetch(
+// `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`    );
+//     const data = await res.json();
+//     if (data.status === 'OK') {
+//       return data.results[0]?.formatted_address || '';
+//     } else {
+//       console.error('Geocoding failed:', data.status);
+//       return '';
+//     }
+//   } catch (error) {
+//     console.error('Error in reverse geocoding:', error);
+//     return '';
+//   }
+// };
+
 
   // Geocode function to get lat/lng from location name (used to generate map link)
-  async function geocode(location: string) {
-    try {
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-          location
-        )}&key=${GOOGLE_MAPS_API_KEY}`
-      );
-      const data = await res.json();
-      if (data.status === 'OK' && data.results.length > 0) {
-        return data.results[0].geometry.location;
-      }
-    } catch (error) {
-      console.error('Geocode failed:', error);
-    }
-    return null;
-  }
+  // async function geocode(location: string) {
+  //   try {
+  //     const res = await fetch(
+  //       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+  //         location
+  //       )}&key=${GOOGLE_MAPS_API_KEY}`
+  //     );
+  //     const data = await res.json();
+  //     if (data.status === 'OK' && data.results.length > 0) {
+  //       return data.results[0].geometry.location;
+  //     }
+  //   } catch (error) {
+  //     console.error('Geocode failed:', error);
+  //   }
+  //   return null;
+  // }
 const mapContainerStyle = {
   width: '100%',
   height: '500px',
@@ -178,28 +172,22 @@ const { isLoaded } = useLoadScript({
 });
 
 useEffect(() => {
-  const geocodeStations = async () => {
-    if (!isLoaded) return;
+  if (!isLoaded) return;
 
-    const newMarkers = await Promise.all(
-      stations.map(async (station) => {
-        const coords = await geocode(station.location);
-        if (coords) {
-          return {
-            id: station.id,
-            name: station.name,
-            position: coords,
-          };
-        }
-        return null;
-      })
-    );
+  const newMarkers = stations
+    .filter((station) => station.latitude && station.longitude)
+    .map((station) => ({
+      id: station._id,
+      name: station.name,
+      position: {
+        lat: parseFloat(station.latitude),
+        lng: parseFloat(station.longitude),
+      },
+    }));
 
-    setMarkers(newMarkers.filter((m) => m !== null) as any[]);
-  };
-
-  geocodeStations();
+  setMarkers(newMarkers);
 }, [stations, isLoaded]);
+
 
 
 // Map click handler for selecting a station marker
@@ -224,9 +212,9 @@ const handleCloseInfoWindow = () => {
     // Instead, we will simulate by opening a small Google Maps in new tab to select location
     // But since direct click coordinates aren't accessible, we can add a workaround:
 
-    alert(
-      'Map clicks are not supported on the embedded map due to iframe limitations. Please type the location in the textbox.'
-    );
+    // alert(
+    //   'Map clicks are not supported on the embedded map due to iframe limitations. Please type the location in the textbox.'
+    // );
   };
 
   const handleEdit = (station: any) => {
@@ -356,39 +344,35 @@ const handleUpdate = () => {
 
 {isLoaded && (
   <>
-{/* Google Map */}
-    {isLoaded && (
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        zoom={12}
-        center={center}
-        onLoad={(mapInstance) => setMap(mapInstance)}
-      >
-{markers.map((marker) => (
-  <Marker
-    key={marker.id}
-    position={marker.position}
-    onClick={() => setSelectedStation(marker)}
-  />
-))}
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      center={center}
+      zoom={12}
+      onClick={handleMapClick}
+    >
+      {markers.map((marker) => (
+        <Marker
+          key={marker.id}
+          position={marker.position}
+          onClick={() => setSelectedStation(marker)}
+        />
+      ))}
+{selectedStation && (
+  <InfoWindow
+    position={selectedStation.position}
+    onCloseClick={handleCloseInfoWindow}
+  >
+    <div>
+      <h4 className="font-bold">{selectedStation.name}</h4>
+      <p>Location: {selectedStation.position.lat}, {selectedStation.position.lng}</p>
+    </div>
+  </InfoWindow>
+)}
 
-
-
-        {selectedStation && (
-          <InfoWindow
-            position={selectedStation.position}
-            onCloseClick={handleCloseInfoWindow}
-          >
-            <div>
-              <h4>{selectedStation.name}</h4>
-              {/* You can add more info about the station here */}
-            </div>
-          </InfoWindow>
-        )}
-      </GoogleMap>
-    )}
+    </GoogleMap>
   </>
 )}
+
 
 <br/>
 <div className="mb-4 flex justify-center">
@@ -594,19 +578,20 @@ const handleUpdate = () => {
           className="w-full h-64 border rounded overflow-hidden cursor-pointer"
         >
           <iframe
-            title="Google Map"
-            src={`https://maps.google.com/maps?q=${
-              currentCoords
-                ? `${currentCoords.lat},${currentCoords.lng}`
-                : encodeURIComponent(mapLocation || 'Pakistan')
-            }&t=&z=13&ie=UTF8&iwloc=A&output=embed`}
-            width="100%"
-            height="100%"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            style={{ pointerEvents: 'auto' }}
-          ></iframe>
+  title="Google Map"
+  src={`https://maps.google.com/maps?q=${
+    currentCoords?.lat && currentCoords?.lng
+      ? `${currentCoords.lat},${currentCoords.lng}`
+      : encodeURIComponent(mapLocation || 'Pakistan')
+  }&t=&z=13&ie=UTF8&iwloc=A&output=embed`}
+  width="100%"
+  height="100%"
+  allowFullScreen
+  loading="lazy"
+  referrerPolicy="no-referrer-when-downgrade"
+  style={{ pointerEvents: 'auto' }}
+></iframe>
+
         </div>
         <small className="text-gray-500 mt-1 block">
           * Click on the map is disabled due to iframe restrictions. Please change location manually.

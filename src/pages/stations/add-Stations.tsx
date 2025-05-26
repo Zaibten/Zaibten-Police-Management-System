@@ -180,16 +180,48 @@ const reverseGeocode = (lat: number, lng: number, setInitial = false) => {
     if (formData.firsRegistered === '') newErrors.firsRegistered = 'FIRs Registered must be numeric.';
     if (weapons.length === 0) newErrors.weapons = 'At least one weapon must be selected.';
     if (vehicles.length === 0) newErrors.vehicles = 'At least one vehicle must be selected.';
+    if (!formData.latitude.trim()) newErrors.latitude = 'Latitude is required.';
+if (!formData.longitude.trim()) newErrors.longitude = 'Longitude is required.';
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  //  const handleSubmit = () => {
+  //   if (!validate()) return;
+
+  //   setModalVisible(true);
+  //   setFormData({
+  //     name: '',
+  //     location: initialLocation, // Restore fetched location instead of blank
+  //     incharge: '',
+  //     contact: '',
+  //     jailCapacity: '0',
+  //     cctvCameras: '0',
+  //     firsRegistered: '0',
+  //   latitude: '',
+  // longitude: '',
+  //   });
+  //   setWeapons([]);
+  //   setVehicles([]);
+  //   if (marker && map) {
+  //     const defaultPos = { lat: 24.8607, lng: 67.0011 };
+  //     marker.setPosition(defaultPos);
+  //     map.panTo(defaultPos);
+  //   }
+  // };
+
 const handleSubmit = () => {
   if (!validate()) return;
 
-  // ✅ Send data to the API
-  axios.post('http://localhost:5000/api/police-station', formData)
+  const completeData = {
+    ...formData,
+    weapons,
+    vehicles,
+  };
+
+  axios.post('http://localhost:5000/api/police-station', completeData)
     .then(res => {
       console.log("Saved:", res.data);
       setModalVisible(true); // Show modal on success
@@ -220,6 +252,7 @@ const handleSubmit = () => {
       alert("Failed to save police station.");
     });
 };
+
 
 return (
   <div className="p-6 md:p-10 max-w-6xl mx-auto h-screen overflow-y-auto bg-gray-50">
@@ -317,24 +350,44 @@ return (
     </div>
 
     <div className="grid grid-cols-2 gap-6 mt-4">
-  <div className="flex flex-col">
-    <label className="mb-1 font-semibold text-gray-700">Latitude</label>
-    <input
-      type="text"
-      value={formData.latitude}
-      readOnly
-      className="border rounded px-3 py-2 bg-gray-100 text-gray-700"
-    />
-  </div>
-  <div className="flex flex-col">
-    <label className="mb-1 font-semibold text-gray-700">Longitude</label>
-    <input
-      type="text"
-      value={formData.longitude}
-      readOnly
-      className="border rounded px-3 py-2 bg-gray-100 text-gray-700"
-    />
-  </div>
+<div className="flex flex-col">
+  <label htmlFor="latitude" className="mb-1 font-semibold text-gray-700">
+    Latitude <span className="text-red-600">*</span>
+  </label>
+  <input
+    id="latitude"
+    name="latitude"
+    type="text"
+    required
+    placeholder="Enter latitude"
+    value={formData.latitude}
+    onChange={handleInputChange}
+    className={`border rounded px-3 py-2 ${
+      errors.latitude ? 'border-red-500' : 'border-gray-300'
+    }`}
+  />
+  {errors.latitude && <p className="text-red-500 text-sm">{errors.latitude}</p>}
+</div>
+
+<div className="flex flex-col">
+  <label htmlFor="longitude" className="mb-1 font-semibold text-gray-700">
+    Longitude <span className="text-red-600">*</span>
+  </label>
+  <input
+    id="longitude"
+    name="longitude"
+    type="text"
+    required
+    placeholder="Enter longitude"
+    value={formData.longitude}
+    onChange={handleInputChange}
+    className={`border rounded px-3 py-2 ${
+      errors.longitude ? 'border-red-500' : 'border-gray-300'
+    }`}
+  />
+  {errors.longitude && <p className="text-red-500 text-sm">{errors.longitude}</p>}
+</div>
+
 </div>
 
 
