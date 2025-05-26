@@ -1,5 +1,5 @@
-import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHome, IconMan, IconSettings, IconUser,} from "@tabler/icons-react"
-import { User2Icon } from "lucide-react"
+import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHome, IconLogout, IconMan, IconSettings, IconUser,} from "@tabler/icons-react"
+import { User2Icon, UserCheck2Icon, UserCircle2Icon } from "lucide-react"
 
 
 export interface NavLink {
@@ -90,15 +90,15 @@ export const sidelinks: SideLink[] = [
   //   icon: <IconMessages size={18} />,
   // },
   {
-    title: 'Admin Users',
+    title: 'Generate Users',
     label: '',
     href: '/adminusers',
-    icon: <User2Icon size={18} />,
+    icon: <UserCircle2Icon size={18} />,
   },
   {
-    title: 'Settings',
+    title: 'Logout',
     label: '',
-    href: '/settings',
-    icon: <IconSettings size={18} />,
+    href: '/logout',
+    icon: <IconLogout size={18} />,
   },
 ]
