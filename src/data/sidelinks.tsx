@@ -1,5 +1,5 @@
-import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHome, IconLogout, IconMan, IconSettings, IconUser,} from "@tabler/icons-react"
-import { User2Icon, UserCheck2Icon, UserCircle2Icon } from "lucide-react"
+import { IconBrandProducthunt, IconChecklist, IconHexagonNumber1, IconHome, IconLogout, IconMan, IconUser,} from "@tabler/icons-react"
+import {UserCircle2Icon } from "lucide-react"
 
 
 export interface NavLink {
