@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 
 const ranksList = [
   'Constable',
@@ -12,21 +12,17 @@ const ranksList = [
 
 const genders = ['Male', 'Female', 'Other'];
 
+
 const statusList = ['Active', 'On Leave', 'Suspended', 'Retired'];
 
 // Example weapons and vehicles, replace with real-time fetch if available
 const weaponsList = ['Pistol', 'Rifle', 'Taser', 'Baton', 'Shotgun'];
 const vehiclesList = ['Motorcycle', 'Patrol Car', 'Van', 'Bicycle'];
 
-const policeStationsList = [
-  'Central Station',
-  'North Station',
-  'East Station',
-  'South Station',
-  'West Station',
-]; // Ideally fetched from backend API
 
 const AddConstablePage: React.FC = () => {
+  
+  const [modalVisible, setModalVisible] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     rank: '',
@@ -44,6 +40,24 @@ const AddConstablePage: React.FC = () => {
     vehicles: [] as string[],
     remarks: '',
   });
+
+  const [policeStationsList, setPoliceStationsList] = useState<string[]>([]);
+
+useEffect(() => {
+  const fetchStations = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/police-stationsfordropdown');
+      const data = await response.json();
+      setPoliceStationsList(data.map((station: { name: string }) => station.name));
+    } catch (error) {
+      console.error('Failed to fetch police stations:', error);
+    }
+  };
+
+  fetchStations();
+}, []);
+
+  
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 //   const mapRef = useRef<HTMLDivElement>(null); // for map if needed
@@ -65,29 +79,87 @@ const AddConstablePage: React.FC = () => {
 //     else setter(list.filter((item) => item !== value));
 //   };
 
-  // Submit handler (validation example)
-  const handleSubmit = () => {
-    let validationErrors: Record<string, string> = {};
-    if (!formData.fullName.trim()) validationErrors.fullName = 'Full Name is required';
-    if (!formData.rank) validationErrors.rank = 'Rank is required';
-    if (!formData.badgeNumber.trim()) validationErrors.badgeNumber = 'Badge Number is required';
-    if (!formData.dob) validationErrors.dob = 'Date of Birth is required';
-    if (!formData.gender) validationErrors.gender = 'Gender is required';
-    if (!formData.contactNumber.trim()) validationErrors.contactNumber = 'Contact Number is required';
-    if (!formData.policeStation) validationErrors.policeStation = 'Police Station is required';
-    if (!formData.joiningDate) validationErrors.joiningDate = 'Joining Date is required';
-    if (!formData.status) validationErrors.status = 'Status is required';
-    if (formData.weapons.length === 0) validationErrors.weapons = 'At least one weapon must be assigned';
-    if (formData.vehicles.length === 0) validationErrors.vehicles = 'At least one vehicle must be assigned';
 
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length === 0) {
-      // Submit form data to backend
-      console.log('Submitting form:', formData);
-      alert('Constable added successfully!');
-      // reset or redirect here
+const handleWeaponsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { value, checked } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    weapons: checked
+      ? [...prev.weapons, value]
+      : prev.weapons.filter((item) => item !== value),
+  }));
+};
+
+const handleVehiclesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { value, checked } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    vehicles: checked
+      ? [...prev.vehicles, value]
+      : prev.vehicles.filter((item) => item !== value),
+  }));
+};
+
+  // Submit handler (validation example)
+const handleSubmit = async () => {
+  let validationErrors: Record<string, string> = {};
+
+  if (!formData.fullName.trim()) validationErrors.fullName = 'Full Name is required';
+  if (!formData.rank) validationErrors.rank = 'Rank is required';
+  if (!formData.badgeNumber.trim()) validationErrors.badgeNumber = 'Badge Number is required';
+  if (!formData.dob) validationErrors.dob = 'Date of Birth is required';
+  if (!formData.gender) validationErrors.gender = 'Gender is required';
+  if (!formData.contactNumber.trim()) validationErrors.contactNumber = 'Contact Number is required';
+  if (!formData.policeStation) validationErrors.policeStation = 'Police Station is required';
+  if (!formData.joiningDate) validationErrors.joiningDate = 'Joining Date is required';
+  if (!formData.status) validationErrors.status = 'Status is required';
+  if (formData.weapons.length === 0) validationErrors.weapons = 'At least one weapon must be assigned';
+  if (formData.vehicles.length === 0) validationErrors.vehicles = 'At least one vehicle must be assigned';
+
+  setErrors(validationErrors);
+  if (Object.keys(validationErrors).length > 0) return;
+
+  try {
+    const response = await fetch('http://localhost:5000/api/constables/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Server validation errors:', errorData);
+setErrors(prev => ({ ...prev, server: errorData.message || 'Failed to add constable' }));      return;
     }
-  };
+
+    const result = await response.json();
+    console.log('Constable added successfully:', result);
+setModalVisible(true);    // Reset form or redirect
+    setFormData({
+      fullName: '',
+      rank: '',
+      badgeNumber: '',
+      dob: '',
+      gender: '',
+      contactNumber: '',
+      email: '',
+      address: '',
+      policeStation: '',
+      joiningDate: '',
+      status: '',
+      qualification: '',
+      weapons: [],
+      vehicles: [],
+      remarks: '',
+    });
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('An error occurred while submitting the form.');
+  }
+};
+
 
   return (
     <div className="h-screen overflow-y-auto bg-gray-50 p-6">
@@ -114,9 +186,7 @@ const AddConstablePage: React.FC = () => {
                   errors.fullName ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
-              {errors.fullName && <p className="text-red-600 text-sm mt-1">{errors.fullName}</p>}
             </div>
-
             {/* Rank Dropdown */}
             <div className="flex flex-col">
               <label htmlFor="rank" className="mb-1 font-semibold text-gray-700">
@@ -257,28 +327,29 @@ const AddConstablePage: React.FC = () => {
           {/* Right Column */}
           <div className="space-y-6">
             {/* Police Station Dropdown */}
-            <div className="flex flex-col">
-              <label htmlFor="policeStation" className="mb-1 font-semibold text-gray-700">
-                Police Station <span className="text-red-600">*</span>
-              </label>
-              <select
-                id="policeStation"
-                name="policeStation"
-                value={formData.policeStation}
-                onChange={handleInputChange}
-                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-                  errors.policeStation ? 'border-red-500' : 'border-gray-300'
-                }`}
-              >
-                <option value="">Select Police Station</option>
-                {policeStationsList.map((ps) => (
-                  <option key={ps} value={ps}>
-                    {ps}
-                  </option>
-                ))}
-              </select>
-              {errors.policeStation && <p className="text-red-600 text-sm mt-1">{errors.policeStation}</p>}
-            </div>
+<div className="flex flex-col">
+  <label htmlFor="policeStation" className="mb-1 font-semibold text-gray-700">
+    Police Station <span className="text-red-600">*</span>
+  </label>
+  <select
+    id="policeStation"
+    name="policeStation"
+    value={formData.policeStation}
+    onChange={handleInputChange}
+    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+      errors.policeStation ? 'border-red-500' : 'border-gray-300'
+    }`}
+  >
+    <option value="">Select Police Station</option>
+    {policeStationsList.map((station) => (
+      <option key={station} value={station}>
+        {station}
+      </option>
+    ))}
+  </select>
+  {errors.policeStation && <p className="text-red-600 text-sm mt-1">{errors.policeStation}</p>}
+</div>
+
 
             {/* Date of Joining */}
             <div className="flex flex-col">
@@ -338,65 +409,48 @@ const AddConstablePage: React.FC = () => {
               />
             </div>
 
-            {/* Weapons Assigned */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-semibold text-gray-700">
-                Weapons Assigned <span className="text-red-600">*</span>
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {weaponsList.map((weapon) => (
-                  <label key={weapon} className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      name="weapons"
-                      value={weapon}
-                      checked={formData.weapons.includes(weapon)}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setFormData((prev) => {
-                          const currentWeapons = prev.weapons;
-                          if (checked) return { ...prev, weapons: [...currentWeapons, weapon] };
-                          else return { ...prev, weapons: currentWeapons.filter((w) => w !== weapon) };
-                        });
-                      }}
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                    />
-                    <span className="ml-2">{weapon}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.weapons && <p className="text-red-600 text-sm mt-1">{errors.weapons}</p>}
-            </div>
+{/* Weapons Assigned */}
+<div className="flex flex-col">
+  <label className="mb-1 font-semibold text-gray-700">
+    Weapons Assigned <span className="text-red-600">*</span>
+  </label>
+  <div className="flex flex-wrap gap-4">
+    {weaponsList.map((weapon) => (
+      <label key={weapon} className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value={weapon}
+          checked={formData.weapons.includes(weapon)}
+          onChange={handleWeaponsChange}
+        />
+        {weapon}
+      </label>
+    ))}
+  </div>
+  {errors.weapons && <p className="text-red-600 text-sm mt-1">{errors.weapons}</p>}
+</div>
 
-            {/* Vehicles Assigned */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-semibold text-gray-700">
-                Vehicles Assigned <span className="text-red-600">*</span>
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {vehiclesList.map((vehicle) => (
-                  <label key={vehicle} className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      name="vehicles"
-                      value={vehicle}
-                      checked={formData.vehicles.includes(vehicle)}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setFormData((prev) => {
-                          const currentVehicles = prev.vehicles;
-                          if (checked) return { ...prev, vehicles: [...currentVehicles, vehicle] };
-                          else return { ...prev, vehicles: currentVehicles.filter((v) => v !== vehicle) };
-                        });
-                      }}
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                    />
-                    <span className="ml-2">{vehicle}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.vehicles && <p className="text-red-600 text-sm mt-1">{errors.vehicles}</p>}
-            </div>
+{/* Vehicles Assigned */}
+<div className="flex flex-col">
+  <label className="mb-1 font-semibold text-gray-700">
+    Vehicles Assigned <span className="text-red-600">*</span>
+  </label>
+  <div className="flex flex-wrap gap-4">
+    {vehiclesList.map((vehicle) => (
+      <label key={vehicle} className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value={vehicle}
+          checked={formData.vehicles.includes(vehicle)}
+          onChange={handleVehiclesChange}
+        />
+        {vehicle}
+      </label>
+    ))}
+  </div>
+  {errors.vehicles && <p className="text-red-600 text-sm mt-1">{errors.vehicles}</p>}
+</div>
+
 
             {/* Remarks */}
             <div className="flex flex-col">
@@ -416,6 +470,35 @@ const AddConstablePage: React.FC = () => {
           </div>
         </div>
 
+        {errors.fullName && <p className="text-red-600 text-sm mt-1">{errors.fullName}</p>}
+
+<style>{`
+        .error-message {
+          color: #e74c3c; /* professional red */
+          background-color: #fdecea; /* subtle light red background */
+          border: 1px solid #e74c3c;
+          padding: 12px 20px;
+          margin-bottom: 15px;
+          border-radius: 5px;
+          font-weight: 600;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          transform: translateY(0);
+          opacity: 1;
+          animation: shake 0.5s ease-in-out;
+        }
+
+        /* Shake animation for subtle movement */
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-8px); }
+          40%, 80% { transform: translateX(8px); }
+        }
+      `}</style>
+
+      {/* Your form and other UI elements */}
+      {errors.server && <div className="error-message">{errors.server}</div>}
+
+
         {/* Submit Button */}
         <div className="flex justify-center mt-8">
           <button
@@ -426,8 +509,146 @@ const AddConstablePage: React.FC = () => {
           </button>
         </div>
       </div>
+            {/* Modal JSX */}
+{modalVisible && (
+  <div
+    style={{
+      position: 'fixed',
+      inset: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+      animation: 'fadeIn 0.4s ease-in-out',
+      fontFamily: "'Poppins', sans-serif",
+    }}
+  >
+    <div
+      style={{
+        backgroundColor: '#fff',
+        padding: '3rem 2.5rem',
+        borderRadius: '1.5rem',
+        maxWidth: '500px',
+        width: '90%',
+        textAlign: 'center',
+        boxShadow: '0 25px 70px rgba(0, 0, 0, 0.3)',
+        animation: 'slideUpFade 0.5s ease-out forwards',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Logo */}
+      <img
+        src="/logo.png"
+        alt="Zaibten Logo"
+        style={{
+          width: '90px',
+          height: '90px',
+          margin: '0 auto 1.2rem auto',
+          animation: 'bounceIn 0.8s ease',
+          borderRadius: '50%',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        }}
+      />
+
+      {/* App Name */}
+      <h1
+        style={{
+          fontSize: '1.6rem',
+          fontWeight: 'bold',
+          color: '#1e293b', // slate-800
+          marginBottom: '0.75rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.4s forwards',
+          opacity: 0,
+        }}
+      >
+        Zaibten Police Management System
+      </h1>
+
+      {/* Success Message */}
+      <h2
+        style={{
+          fontSize: '1.2rem',
+          fontWeight: 600,
+          color: '#22c55e', // green-500
+          marginBottom: '2rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.6s forwards',
+          opacity: 0,
+        }}
+      >
+        Constable Added Successfully!
+      </h2>
+
+      {/* Close Button */}
+      <button
+        onClick={() => setModalVisible(false)}
+        style={{
+          backgroundColor: '#dc2626', // red-600
+          color: '#fff',
+          padding: '0.75rem 2rem',
+          borderRadius: '10px',
+          border: 'none',
+          fontWeight: 600,
+          fontSize: '1rem',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+          opacity: 0,
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#b91c1c'; // red-700
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#dc2626';
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        Close
+      </button>
     </div>
-  );
-};
+
+    {/* Animations */}
+    <style>
+      {`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideUpFade {
+          0% { transform: translateY(30px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInText {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+          0% {
+            transform: scale(0.3);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 1;
+          }
+          70% {
+            transform: scale(0.95);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+      `}
+    </style>
+  </div>
+)}
+  </div>
+)
+}
 
 export default AddConstablePage;

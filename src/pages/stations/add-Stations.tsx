@@ -6,6 +6,7 @@ const weaponsList = [
   'Sniper Rifles', 'Tasers', 'Baton', 'Grenades',
 ];
 
+
 const vehiclesList = [
   'Patrol Cars', 'Motorcycles', 'Armored Vehicles', 'Vans', 'Helicopters',
   'Boats', 'Bicycles', 'Trucks',

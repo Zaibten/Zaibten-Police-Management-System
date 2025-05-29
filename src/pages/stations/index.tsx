@@ -6,6 +6,11 @@ export default function Stations() {
   const [modalVisible, setModalVisible] = React.useState(false);
   
 const [stations, setStations] = useState<any[]>([]);
+const [deleteStationId, setDeleteStationId] = React.useState<string | null>(null);
+const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+
+
 
 useEffect(() => {
   const fetchStations = async () => {
@@ -217,19 +222,74 @@ const handleCloseInfoWindow = () => {
     // );
   };
 
+const confirmDeleteStation = async () => {
+  if (!deleteStationId) return;
+
+  try {
+    const response = await fetch(`http://localhost:5000/api/stations/${deleteStationId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete the station');
+    }
+
+    const result = await response.json();
+    console.log('Deleted:', result);
+
+    setStations((prev) => prev.filter((station) => station._id !== deleteStationId));
+    setShowDeleteModal(false);
+    setDeleteStationId(null);
+
+    // Show success modal instead of alert
+    setShowSuccessModal(true);
+
+  } catch (error) {
+    console.error('❌ Error deleting station:', error);
+    alert('Failed to delete the station. Please try again.');
+  }
+};
+
+
+const handleDelete = (_id: string) => {
+  setDeleteStationId(_id);
+  setShowDeleteModal(true);
+};
+
+
   const handleEdit = (station: any) => {
     setEditStation({ ...station });
     setMapLocation(station.location);
   };
 
-  const handleDelete = (id: number) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this station?');
-    if (confirmDelete) {
-      setStations((prev) => prev.filter((station) => station.id !== id));
-    }
-  };
+// const handleDelete = async (_id) => {
+//   const confirmDelete = window.confirm('Are you sure you want to delete this station?');
+//   if (!confirmDelete) return;
 
-const handleUpdate = () => {
+//   try {
+//     const response = await fetch(`http://localhost:5000/api/stations/${_id}`, {
+//       method: 'DELETE',
+//     });
+
+//     if (!response.ok) {
+//       throw new Error('Failed to delete the station');
+//     }
+
+//     // Optionally get the response JSON
+//     const result = await response.json();
+//     console.log('Deleted:', result);
+
+//     setStations((prev) => prev.filter((station) => station._id !== _id));
+//     alert('✅ Station deleted successfully.');
+//   } catch (error) {
+//     console.error('❌ Error deleting station:', error);
+//     alert('Failed to delete the station. Please try again.');
+//   }
+// };
+
+
+
+const handleUpdate = async () => {
   const {
     name,
     location,
@@ -238,6 +298,7 @@ const handleUpdate = () => {
     jailCapacity,
     firsRegistered,
     cctvCameras,
+    _id // make sure _id is destructured here
   } = editStation;
 
   const contactRegex = /^[0-9-\s]{7,15}$/;
@@ -263,14 +324,38 @@ const handleUpdate = () => {
     return;
   }
 
-  setStations((prev) =>
-    prev.map((station) => (station.id === editStation.id ? editStation : station))
-  );
-  setEditStation(null);
+  try {
+    // ✅ API call to update the station in the backend using _id
+    const response = await fetch(`http://localhost:5000/api/stations/${_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(editStation),
+    });
 
-  // Show success modal
-  setModalVisible(true);
+    if (!response.ok) {
+      throw new Error('Failed to update the station');
+    }
+
+    const updatedStation = await response.json();
+
+    // ✅ Update the local state with updated data
+    setStations((prev) =>
+      prev.map((station) =>
+        station._id === updatedStation._id ? updatedStation : station
+      )
+    );
+
+    setEditStation(null);
+    setModalVisible(true);
+  } catch (error) {
+    console.error('❌ Error updating station:', error);
+    alert('Failed to update the station. Please try again.');
+  }
 };
+
+
 
 
 // When map loads, keep reference
@@ -442,7 +527,7 @@ const handleUpdate = () => {
     Edit
   </button>
   <button
-    onClick={() => handleDelete(station.id)}
+    onClick={() => handleDelete(station._id)}
     className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
   >
     Delete
@@ -748,6 +833,249 @@ const handleUpdate = () => {
     </style>
   </div>
 )}
+
+{showDeleteModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div
+      style={{
+        backgroundColor: '#fff',
+        padding: '2.5rem 2rem',
+        borderRadius: '1.5rem',
+        maxWidth: '450px',
+        width: '90%',
+        textAlign: 'center',
+        boxShadow: '0 25px 70px rgba(0, 0, 0, 0.3)',
+        animation: 'slideUpFade 0.5s ease-out forwards',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <img
+        src="/logo.png"
+        alt="Zaibten Logo"
+        style={{
+          width: '90px',
+          height: '90px',
+          margin: '0 auto 1.2rem auto',
+          animation: 'bounceIn 0.8s ease',
+          borderRadius: '50%',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        }}
+      />
+
+      <h2
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          color: '#1e293b',
+          marginBottom: '0.5rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.4s forwards',
+          opacity: 0,
+        }}
+      >
+        Confirm Delete
+      </h2>
+
+      <p
+        style={{
+          fontSize: '1rem',
+          color: '#334155',
+          marginBottom: '2rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.6s forwards',
+          opacity: 0,
+        }}
+      >
+        Are you sure you want to delete this station? This action cannot be undone.
+      </p>
+
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => {
+            setShowDeleteModal(false);
+            setDeleteStationId(null);
+          }}
+          className="px-4 py-2 border rounded text-gray-700"
+          style={{
+            animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+            opacity: 0,
+            transition: 'background-color 0.3s ease, transform 0.3s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#e5e7eb'; // gray-200
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={confirmDeleteStation}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          style={{
+            animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+            opacity: 0,
+            transition: 'background-color 0.3s ease, transform 0.3s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#b91c1c';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#dc2626';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          Delete
+        </button>
+      </div>
+
+      <style>
+        {`
+          @keyframes slideUpFade {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+          }
+
+          @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes bounceIn {
+            0% {
+              transform: scale(0.3);
+              opacity: 0;
+            }
+            50% {
+              transform: scale(1.1);
+              opacity: 1;
+            }
+            70% {
+              transform: scale(0.95);
+            }
+            100% {
+              transform: scale(1);
+            }
+          }
+        `}
+      </style>
+    </div>
+  </div>
+)}
+
+{showSuccessModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div
+      style={{
+        backgroundColor: '#fff',
+        padding: '2.5rem 2rem',
+        borderRadius: '1.5rem',
+        maxWidth: '450px',
+        width: '90%',
+        textAlign: 'center',
+        boxShadow: '0 25px 70px rgba(0, 0, 0, 0.3)',
+        animation: 'slideUpFade 0.5s ease-out forwards',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <img
+        src="/logo.png"
+        alt="Zaibten Logo"
+        style={{
+          width: '90px',
+          height: '90px',
+          margin: '0 auto 1.2rem auto',
+          animation: 'bounceIn 0.8s ease',
+          borderRadius: '50%',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        }}
+      />
+
+      <h2
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          color: '#16a34a', // green
+          marginBottom: '0.5rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.4s forwards',
+          opacity: 0,
+        }}
+      >
+        Success!
+      </h2>
+
+      <p
+        style={{
+          fontSize: '1rem',
+          color: '#334155',
+          marginBottom: '2rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.6s forwards',
+          opacity: 0,
+        }}
+      >
+        ✅ Station deleted successfully.
+      </p>
+
+      <button
+        onClick={() => setShowSuccessModal(false)}
+        className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        style={{
+          animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+          opacity: 0,
+          transition: 'background-color 0.3s ease, transform 0.3s ease',
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#15803d';
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#16a34a';
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        Close
+      </button>
+
+      <style>
+        {`
+          @keyframes slideUpFade {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+          }
+
+          @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes bounceIn {
+            0% {
+              transform: scale(0.3);
+              opacity: 0;
+            }
+            50% {
+              transform: scale(1.1);
+              opacity: 1;
+            }
+            70% {
+              transform: scale(0.95);
+            }
+            100% {
+              transform: scale(1);
+            }
+          }
+        `}
+      </style>
+    </div>
+  </div>
+)}
+
+
 
     </div>
   );
