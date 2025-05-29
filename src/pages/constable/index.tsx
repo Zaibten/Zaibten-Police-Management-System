@@ -39,8 +39,8 @@ const closeModal = () => {
   setSelectedConstable(null);
 };
 
-
-  const itemsPerPage = 10;
+ const [itemsPerPage, setItemsPerPage] = React.useState(20);
+  // const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
 
 
@@ -175,31 +175,48 @@ const updateConstable = async () => {
         />
       </div>
 
-      <div className="flex items-center justify-center mt-4 space-x-2">
-        <button
-          onClick={goToPrevPage}
-          disabled={currentPage === 1}
-          className={`p-2 rounded-full border ${
-            currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
-          }`}
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
+<div className="flex items-center justify-between mt-4 px-4">
+  {/* Left side empty or you can put something here */}
+  <div></div>
 
-        <span className="text-sm font-medium text-gray-700">
-          Page {currentPage} of {totalPages}
-        </span>
+  {/* Pagination controls centered */}
+  <div className="flex items-center space-x-2">
+    <button
+      onClick={goToPrevPage}
+      disabled={currentPage === 1}
+      className={`p-2 rounded-full border ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+    >
+      <ChevronLeft className="w-5 h-5" />
+    </button>
 
-        <button
-          onClick={goToNextPage}
-          disabled={currentPage === totalPages}
-          className={`p-2 rounded-full border ${
-            currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'
-          }`}
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      </div>
+    <span className="text-sm font-medium text-gray-700">
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      onClick={goToNextPage}
+      disabled={currentPage === totalPages}
+      className={`p-2 rounded-full border ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+    >
+      <ChevronRight className="w-5 h-5" />
+    </button>
+  </div>
+
+  {/* Right side: Items per page input */}
+  <div className="flex items-center space-x-2">
+    <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-700">
+      Items per page:
+    </label>
+    <input
+      id="itemsPerPage"
+      type="number"
+      min={1}
+      value={itemsPerPage}
+      onChange={e => setItemsPerPage(Number(e.target.value) || 20)}
+      className="w-20 p-1 border rounded text-center"
+    />
+  </div>
+</div>
 
       <br />
 
