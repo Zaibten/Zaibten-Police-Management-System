@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ConstablePage() {
@@ -21,6 +21,12 @@ const vehiclesList = ['Motorcycle', 'Patrol Car', 'Van', 'Bicycle'];
   const [showModal, setShowModal] = useState(false);
   const [selectedConstable, setSelectedConstable] = useState<any | null>(null);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+const [deleteConstableId, setDeleteConstableId] = React.useState<string | null>(null);
+const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+
+
+
 
 
   const handleEditClick = (constable: any) => {
@@ -43,7 +49,7 @@ const closeModal = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:5000/api/constablesdata');
+        const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/constablesdata');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -59,10 +65,42 @@ const closeModal = () => {
     fetchConstables();
   }, []);
 
+
+const deleteConstable = (id: string) => {
+  setDeleteConstableId(id);
+  setShowDeleteModal(true);
+};
+
+const confirmDeleteConstable = async () => {
+  if (!deleteConstableId) return;
+
+  try {
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/deleteconstables/${deleteConstableId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Delete failed');
+    }
+
+    // Remove from local state after successful deletion
+    setConstables((prev) => prev.filter((c) => c._id !== deleteConstableId));
+    setShowDeleteModal(false);
+    setShowSuccessModal(true);
+    setDeleteConstableId(null);
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
+
+
+
   const [searchText, setSearchText] = useState('');
-  const filteredConstables = constables.filter((c) =>
-  `${c.firstName}${c.lastName}`.toLowerCase().includes(searchText.toLowerCase())
+const filteredConstables = constables.filter((c) =>
+  (c.fullName || '').toLowerCase().includes(searchText.toLowerCase())
 );
+
 
 const totalPages = Math.ceil(filteredConstables.length / itemsPerPage);
 const startIndex = (currentPage - 1) * itemsPerPage;
@@ -72,6 +110,35 @@ const currentConstables = filteredConstables.slice(startIndex, startIndex + item
 
 
 
+const updateConstable = async () => {
+  if (!selectedConstable?._id) return;
+
+  try {
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/updateconstables/${selectedConstable._id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(selectedConstable),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Update failed');
+    }
+
+    const updated = await response.json();
+
+    // Update constables state to reflect the update
+    setConstables((prev) =>
+      prev.map((c) => (c._id === updated._id ? updated : c))
+    );
+
+    setShowModal(false);
+    setSelectedConstable(null);
+    setSuccessModalVisible(true);
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
 
 
 
@@ -190,6 +257,8 @@ const currentConstables = filteredConstables.slice(startIndex, startIndex + item
 </button>
 
   <button
+  onClick={() => deleteConstable(constable._id)}
+  
     className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
   >
     Delete
@@ -214,9 +283,9 @@ const currentConstables = filteredConstables.slice(startIndex, startIndex + item
             value={selectedConstable.fullName}
             onChange={(e) =>
               setSelectedConstable({ ...selectedConstable, fullName: e.target.value })
-            }
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+            } readOnly
+    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed"
+ />
         </div>
 
         <div>
@@ -242,20 +311,23 @@ const currentConstables = filteredConstables.slice(startIndex, startIndex + item
             onChange={(e) =>
               setSelectedConstable({ ...selectedConstable, badgeNumber: e.target.value })
             }
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+           readOnly
+    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed"
+  
+           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">DOB</label>
+          <label className="block text-sm font-medium text-gray-700">Date Of Birth</label>
           <input
             type="date"
             value={selectedConstable.dob}
             onChange={(e) =>
               setSelectedConstable({ ...selectedConstable, dob: e.target.value })
             }
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+            readOnly
+    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 cursor-not-allowed"
+  />
         </div>
 
         <div>
@@ -473,7 +545,7 @@ const currentConstables = filteredConstables.slice(startIndex, startIndex + item
               alert("Please select at least one weapon or vehicle.");
               return;
             }
-
+            updateConstable(); // 🔴 CALL the function here!
             closeModal();
             setShowModal(false);
             setSuccessModalVisible(true);
@@ -621,6 +693,238 @@ const currentConstables = filteredConstables.slice(startIndex, startIndex + item
   </div>
 )}
 
+{showDeleteModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div
+      style={{
+        backgroundColor: '#fff',
+        padding: '2.5rem 2rem',
+        borderRadius: '1.5rem',
+        maxWidth: '450px',
+        width: '90%',
+        textAlign: 'center',
+        boxShadow: '0 25px 70px rgba(0, 0, 0, 0.3)',
+        animation: 'slideUpFade 0.5s ease-out forwards',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <img
+        src="/logo.png"
+        alt="Zaibten Logo"
+        style={{
+          width: '90px',
+          height: '90px',
+          margin: '0 auto 1.2rem auto',
+          animation: 'bounceIn 0.8s ease',
+          borderRadius: '50%',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        }}
+      />
+
+      <h2
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          color: '#1e293b',
+          marginBottom: '0.5rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.4s forwards',
+          opacity: 0,
+        }}
+      >
+        Confirm Delete
+      </h2>
+
+      <p
+        style={{
+          fontSize: '1rem',
+          color: '#334155',
+          marginBottom: '2rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.6s forwards',
+          opacity: 0,
+        }}
+      >
+        Are you sure you want to delete this constable? This action cannot be undone.
+      </p>
+
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => {
+            setShowDeleteModal(false);
+            setDeleteConstableId(null);
+          }}
+          className="px-4 py-2 border rounded text-gray-700"
+          style={{
+            animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+            opacity: 0,
+            transition: 'background-color 0.3s ease, transform 0.3s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#e5e7eb';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={confirmDeleteConstable}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          style={{
+            animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+            opacity: 0,
+            transition: 'background-color 0.3s ease, transform 0.3s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#b91c1c';
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#dc2626';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          Delete
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes slideUpFade {
+          0% { transform: translateY(30px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeInText {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+          0% {
+            transform: scale(0.3);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 1;
+          }
+          70% {
+            transform: scale(0.95);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+      `}</style>
+    </div>
+  </div>
+)}
+
+{showSuccessModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div
+      style={{
+        backgroundColor: '#fff',
+        padding: '2.5rem 2rem',
+        borderRadius: '1.5rem',
+        maxWidth: '450px',
+        width: '90%',
+        textAlign: 'center',
+        boxShadow: '0 25px 70px rgba(0, 0, 0, 0.3)',
+        animation: 'slideUpFade 0.5s ease-out forwards',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <img
+        src="/logo.png"
+        alt="Zaibten Logo"
+        style={{
+          width: '90px',
+          height: '90px',
+          margin: '0 auto 1.2rem auto',
+          animation: 'bounceIn 0.8s ease',
+          borderRadius: '50%',
+          boxShadow: '0 6px 18px rgba(0,0,0,0.2)',
+        }}
+      />
+
+      <h2
+        style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          color: '#16a34a', // green
+          marginBottom: '0.5rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.4s forwards',
+          opacity: 0,
+        }}
+      >
+        Success!
+      </h2>
+
+      <p
+        style={{
+          fontSize: '1rem',
+          color: '#334155',
+          marginBottom: '2rem',
+          animation: 'fadeInText 0.6s ease-in-out 0.6s forwards',
+          opacity: 0,
+        }}
+      >
+        ✅ Constable deleted successfully.
+      </p>
+
+      <button
+        onClick={() => setShowSuccessModal(false)}
+        className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        style={{
+          animation: 'fadeInText 0.6s ease-in-out 0.8s forwards',
+          opacity: 0,
+          transition: 'background-color 0.3s ease, transform 0.3s ease',
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = '#15803d';
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = '#16a34a';
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        Close
+      </button>
+
+      <style>{`
+        @keyframes slideUpFade {
+          0% { transform: translateY(30px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeInText {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+          0% {
+            transform: scale(0.3);
+            opacity: 0;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 1;
+          }
+          70% {
+            transform: scale(0.95);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+      `}</style>
+    </div>
+  </div>
+)}
 
     </div>
   );

@@ -35,6 +35,8 @@ export default function AddStation() {
   const mapRef = useRef<HTMLDivElement>(null);
 
   const GOOGLE_API_KEY = 'AIzaSyDYNJVSQHG-_I6eC6VXqhSrcpYmXTKWtU8';
+  const [serverError, setServerError] = React.useState('');
+
 
   useEffect(() => {
     if (!window.google) {
@@ -222,10 +224,11 @@ const handleSubmit = () => {
     vehicles,
   };
 
-  axios.post('http://localhost:5000/api/police-station', completeData)
+  axios.post('https://zaibtenpoliceserver.vercel.app/api/police-station', completeData)
     .then(res => {
       console.log("Saved:", res.data);
       setModalVisible(true); // Show modal on success
+      setServerError('');  // Clear previous server errors
 
       // ✅ Reset form
       setFormData({
@@ -249,8 +252,12 @@ const handleSubmit = () => {
       }
     })
     .catch(err => {
-      console.error("Error saving station:", err.response?.data || err.message);
-      alert("Failed to save police station.");
+       console.error("Error saving station:", err.response?.data || err.message);
+      if (err.response?.status === 409) {
+        setServerError(err.response.data.message); // Duplicate error
+      } else {
+        alert("Failed to save police station.");
+      }
     });
 };
 
@@ -439,6 +446,27 @@ return (
         <p className="text-red-600 text-sm mt-1">{errors.vehicles}</p>
       )}
     </div>
+<style>{`
+  .error-message {
+    color: #e74c3c;
+    background-color: #fdecea;
+    border: 1px solid #e74c3c;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+`}</style>
+<br></br>
+{serverError && <div className="error-message">{serverError}</div>}
 
     {/* Submit Button */}
     <div className="text-center mt-6">

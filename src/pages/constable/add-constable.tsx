@@ -46,7 +46,7 @@ const AddConstablePage: React.FC = () => {
 useEffect(() => {
   const fetchStations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/police-stationsfordropdown');
+      const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/police-stationsfordropdown');
       const data = await response.json();
       setPoliceStationsList(data.map((station: { name: string }) => station.name));
     } catch (error) {
@@ -120,7 +120,7 @@ const handleSubmit = async () => {
   if (Object.keys(validationErrors).length > 0) return;
 
   try {
-    const response = await fetch('http://localhost:5000/api/constables/', {
+    const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/constables/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

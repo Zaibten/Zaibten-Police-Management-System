@@ -2,6 +2,7 @@ import React, { useEffect, useState} from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { GoogleMap, Marker, useLoadScript, InfoWindow  } from '@react-google-maps/api';
 
+
 export default function Stations() {
   const [modalVisible, setModalVisible] = React.useState(false);
   
@@ -10,12 +11,38 @@ const [deleteStationId, setDeleteStationId] = React.useState<string | null>(null
 const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 const [showSuccessModal, setShowSuccessModal] = React.useState(false);
 
+const weaponsList = [
+  'Pistols', 'Rifles', 'Shotguns', 'Submachine Guns', 'Machine Guns',
+  'Sniper Rifles', 'Tasers', 'Baton', 'Grenades',
+];
+
+const vehiclesList = [
+  'Patrol Cars', 'Motorcycles', 'Armored Vehicles', 'Vans', 'Helicopters',
+  'Boats', 'Bicycles', 'Trucks',
+];
+
+interface PoliceStationType {
+  weapons?: string[];
+  vehicles?: string[];
+  name?: string;
+  location?: string;
+  incharge?: string;
+  contact?: string;
+  jailCapacity?: number;
+  firsRegistered?: number;
+  cctvCameras?: number;
+  [key: string]: any;
+}
+
+
+
+
 
 
 useEffect(() => {
   const fetchStations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/getpolice-stations');
+      const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/getpolice-stations');
       const json = await response.json();
       if (json.success) {
         setStations(json.data);
@@ -226,7 +253,7 @@ const confirmDeleteStation = async () => {
   if (!deleteStationId) return;
 
   try {
-    const response = await fetch(`http://localhost:5000/api/stations/${deleteStationId}`, {
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/stations/${deleteStationId}`, {
       method: 'DELETE',
     });
 
@@ -267,7 +294,7 @@ const handleDelete = (_id: string) => {
 //   if (!confirmDelete) return;
 
 //   try {
-//     const response = await fetch(`http://localhost:5000/api/stations/${_id}`, {
+//     const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/stations/${_id}`, {
 //       method: 'DELETE',
 //     });
 
@@ -326,7 +353,7 @@ const handleUpdate = async () => {
 
   try {
     // ✅ API call to update the station in the backend using _id
-    const response = await fetch(`http://localhost:5000/api/stations/${_id}`, {
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/stations/${_id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -495,7 +522,7 @@ const handleUpdate = async () => {
   </button>
 </div>
 <br></br>
-  <div className="max-h-[400px] overflow-y-auto overflow-x-auto shadow border border-gray-200 rounded-lg">
+<div className="max-h-[400px] overflow-y-auto overflow-x-auto shadow border border-gray-200 rounded-lg">
   <table className="min-w-full text-sm text-left text-gray-700">
     <thead className="bg-gray-100 uppercase text-xs font-medium">
       <tr>
@@ -506,12 +533,14 @@ const handleUpdate = async () => {
         <th className="px-4 py-2">Jail Cap.</th>
         <th className="px-4 py-2">FIRs</th>
         <th className="px-4 py-2">CCTV</th>
+        <th className="px-4 py-2">Weapons</th>
+        <th className="px-4 py-2">Vehicles</th>
         <th className="px-4 py-2">Actions</th>
       </tr>
     </thead>
     <tbody>
       {currentStations.map(station => (
-        <tr key={station.id} className="border-t hover:bg-gray-50">
+        <tr key={station._id} className="border-t hover:bg-gray-50">
           <td className="px-4 py-2">{station.name}</td>
           <td className="px-4 py-2">{station.location}</td>
           <td className="px-4 py-2">{station.incharge}</td>
@@ -519,26 +548,35 @@ const handleUpdate = async () => {
           <td className="px-4 py-2">{station.jailCapacity}</td>
           <td className="px-4 py-2">{station.firsRegistered}</td>
           <td className="px-4 py-2">{station.cctvCameras}</td>
-        <td className="px-4 py-2 flex flex-wrap items-center gap-2">
-  <button
-    onClick={() => handleEdit(station)}
-    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
-  >
-    Edit
-  </button>
-  <button
-    onClick={() => handleDelete(station._id)}
-    className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
-  >
-    Delete
-  </button>
-</td>
-
+          <td className="px-4 py-2">
+            {station.weapons && station.weapons.length > 0
+              ? station.weapons.join(", ")
+              : "None"}
+          </td>
+          <td className="px-4 py-2">
+            {station.vehicles && station.vehicles.length > 0
+              ? station.vehicles.join(", ")
+              : "None"}
+          </td>
+          <td className="px-4 py-2 flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => handleEdit(station)}
+              className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(station._id)}
+              className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+            >
+              Delete
+            </button>
+          </td>
         </tr>
       ))}
-      {stations.length === 0 && (
+      {currentStations.length === 0 && (
         <tr>
-          <td colSpan={8} className="text-center p-4 text-gray-500">
+          <td colSpan={10} className="text-center p-4 text-gray-500">
             No stations found.
           </td>
         </tr>
@@ -546,6 +584,7 @@ const handleUpdate = async () => {
     </tbody>
   </table>
 </div>
+
 
     <br/>
     <br/>
@@ -654,6 +693,67 @@ const handleUpdate = async () => {
             required
           />
         </div>
+
+<br></br>
+<div className="mb-4">
+  <label className="block font-semibold mb-2">Weapons</label>
+  <div className="flex flex-wrap gap-3">
+    {weaponsList.map((weapon) => (
+      <label key={weapon} className="inline-flex items-center space-x-2">
+        <input
+          type="checkbox"
+          value={weapon}
+          checked={editStation?.weapons?.includes(weapon) || false}
+          onChange={(e) => {
+            const checked = e.target.checked;
+            setEditStation((prev: PoliceStationType | null) => {
+              if (!prev) return prev;
+              let newWeapons = prev.weapons ? [...prev.weapons] : [];
+              if (checked) {
+                if (!newWeapons.includes(weapon)) newWeapons.push(weapon);
+              } else {
+                newWeapons = newWeapons.filter((w) => w !== weapon);
+              }
+              return { ...prev, weapons: newWeapons };
+            });
+          }}
+          className="form-checkbox h-4 w-4 text-blue-600"
+        />
+        <span>{weapon}</span>
+      </label>
+    ))}
+  </div>
+</div>
+<div className="mb-4">
+  <label className="block font-semibold mb-2">Vehicles</label>
+  <div className="flex flex-wrap gap-3">
+    {vehiclesList.map((vehicle) => (
+      <label key={vehicle} className="inline-flex items-center space-x-2">
+        <input
+          type="checkbox"
+          value={vehicle}
+          checked={editStation?.vehicles?.includes(vehicle) || false}
+          onChange={(e) => {
+            const checked = e.target.checked;
+            setEditStation((prev: PoliceStationType | null) => {
+              if (!prev) return prev;
+              let newVehicles = prev.vehicles ? [...prev.vehicles] : [];
+              if (checked) {
+                if (!newVehicles.includes(vehicle)) newVehicles.push(vehicle);
+              } else {
+                newVehicles = newVehicles.filter((v) => v !== vehicle);
+              }
+              return { ...prev, vehicles: newVehicles };
+            });
+          }}
+          className="form-checkbox h-4 w-4 text-green-600"
+        />
+        <span>{vehicle}</span>
+      </label>
+    ))}
+  </div>
+</div>
+
       </div>
 
       <div>
