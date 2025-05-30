@@ -49,7 +49,7 @@ const closeModal = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/constablesdata');
+        const response = await fetch('http://localhost:5000/api/constablesdata');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -75,7 +75,7 @@ const confirmDeleteConstable = async () => {
   if (!deleteConstableId) return;
 
   try {
-    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/deleteconstables/${deleteConstableId}`, {
+    const response = await fetch(`http://localhost:5000/api/deleteconstables/${deleteConstableId}`, {
       method: 'DELETE',
     });
 
@@ -114,7 +114,7 @@ const updateConstable = async () => {
   if (!selectedConstable?._id) return;
 
   try {
-    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/updateconstables/${selectedConstable._id}`, {
+    const response = await fetch(`http://localhost:5000/api/updateconstables/${selectedConstable._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(selectedConstable),

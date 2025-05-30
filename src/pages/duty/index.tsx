@@ -16,7 +16,7 @@ const Duty: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const today = new Date().toISOString().split("T")[0];
-
+  const [dateError, setDateError] = useState("");
   const [isErrorMessage, setIsErrorMessage] = useState(false);
 
 
@@ -38,7 +38,7 @@ const handleSearch = async () => {
   }
 setLoading(true);
   try {
-    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/constable/${badgeNumber.trim()}`);
+    const response = await fetch(`http://localhost:5000/api/constable/${badgeNumber.trim()}`);
     if (!response.ok) throw new Error("Policeman not found");
     const data = await response.json();
     setPoliceman({
@@ -50,9 +50,10 @@ setLoading(true);
       policeStation: data.policeStation,
     });
   } catch (err) {
-    setModalVisible(true);  // Show modal instead of alert
-    setPoliceman(null);
-    setPoliceman(null);
+    alert('This Badge no not exist in our record !!');
+    // setModalVisible(true);  // Show modal instead of alert
+    // setPoliceman(null);
+    // setPoliceman(null);
   }
   finally {
     setLoading(false);
@@ -84,29 +85,48 @@ const getStatusBgColor = (status: string) => {
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+
   if (!policeman) return alert("Please search and select a policeman first.");
 
+  // 🚫 Date validation for "multiple" dutyType
+  if (formData.dutyType === "multiple") {
+    const from = new Date(formData.fromDate);
+    const to = new Date(formData.toDate);
+
+    if (!formData.fromDate || !formData.toDate) {
+      setDateError("Both From Date and To Date are required.");
+      return;
+    }
+
+    if (from > to) {
+      setDateError("From Date cannot be greater than To Date.");
+      return;
+    }
+
+    setDateError(""); // ✅ Clear error if valid
+  }
+
   // Prepare data for API
-  const payload = {
-    badgeNumber: policeman.badgeNumber,
-    name: policeman.name,
-    rank: policeman.rank,
-    status: policeman.status,
-    contact: policeman.contact,
-    policeStation: policeman.policeStation,
-    location: formData.location,
-    xCoord: Number(formData.xCoord),
-    yCoord: Number(formData.yCoord),
-    shift: formData.shift,
-    dutyType: formData.dutyType,
-    dutyDate: formData.dutyType === "single" 
-      ? formData.dutyDate 
-      : formData.fromDate, // if multiple, you might want to handle differently
-    batchNumber: "Batch1", // you can change or add an input for batchNumber if needed
-  };
+const payload = {
+  badgeNumber: policeman.badgeNumber,
+  name: policeman.name,
+  rank: policeman.rank,
+  status: policeman.status,
+  contact: policeman.contact,
+  policeStation: policeman.policeStation,
+  location: formData.location,
+  xCoord: Number(formData.xCoord),
+  yCoord: Number(formData.yCoord),
+  shift: formData.shift,
+  dutyType: formData.dutyType,
+  dutyDate: formData.dutyType === "single" ? formData.dutyDate : formData.fromDate,
+  fromDate: formData.dutyType === "multiple" ? formData.fromDate : undefined,
+  toDate: formData.dutyType === "multiple" ? formData.toDate : undefined,
+  batchNumber: "Batch1",
+};
 
   try {
-    const res = await fetch("https://zaibtenpoliceserver.vercel.app/api/assign-duty", {
+    const res = await fetch("http://localhost:5000/api/assign-duty", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -115,13 +135,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to assign duty");
 
-    // alert(data.message); // "Duty assigned successfully"
+    setModalMessage(data.message);
+    setIsErrorMessage(false);
+    setModalVisible(true);
 
-  setModalMessage(data.message);  // ✅ Set success message
-  setIsErrorMessage(false);       // ✅ It's a success
-  setModalVisible(true);
-    
-    // Reset form & policeman info
     setFormData({
       location: "",
       xCoord: "",
@@ -135,11 +152,12 @@ const handleSubmit = async (e: React.FormEvent) => {
     setBadgeNumber("");
     setPoliceman(null);
   } catch (error: any) {
-    setModalMessage(error.message);  // ❌ Set error message
-  setIsErrorMessage(true);         // ❌ It's an error
-  setModalVisible(true);
+    setModalMessage(error.message);
+    setIsErrorMessage(true);
+    setModalVisible(true);
   }
 };
+
 
 
 
@@ -344,6 +362,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                     name="toDate"
                     value={formData.toDate}
                     onChange={handleChange}
+                    
+                    min={today}
                     required
                     className="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-800
                                  text-gray-900 dark:text-white text-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
@@ -351,6 +371,31 @@ const handleSubmit = async (e: React.FormEvent) => {
                 </div>
               </>
             )}
+
+<br></br>
+<style>{`
+  .error-message {
+    color: #e74c3c;
+    background-color: #fdecea;
+    border: 1px solid #e74c3c;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+`}</style>
+
+{dateError && (
+  <div className="error-message max-w-2xl mx-auto mb-4">{dateError}</div>
+)}
 
             <div className="sm:col-span-2 flex justify-center mt-4">
               <button

@@ -224,7 +224,7 @@ const handleSubmit = () => {
     vehicles,
   };
 
-  axios.post('https://zaibtenpoliceserver.vercel.app/api/police-station', completeData)
+  axios.post('http://localhost:5000/api/police-station', completeData)
     .then(res => {
       console.log("Saved:", res.data);
       setModalVisible(true); // Show modal on success
