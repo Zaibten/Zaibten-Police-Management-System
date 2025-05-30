@@ -38,7 +38,7 @@ const handleSearch = async () => {
   }
 setLoading(true);
   try {
-    const response = await fetch(`http://localhost:5000/api/constable/${badgeNumber.trim()}`);
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/constable/${badgeNumber.trim()}`);
     if (!response.ok) throw new Error("Policeman not found");
     const data = await response.json();
     setPoliceman({
@@ -126,7 +126,7 @@ const payload = {
 };
 
   try {
-    const res = await fetch("http://localhost:5000/api/assign-duty", {
+    const res = await fetch("https://zaibtenpoliceserver.vercel.app/api/assign-duty", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

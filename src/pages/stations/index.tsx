@@ -50,7 +50,7 @@ interface PoliceStationType {
 useEffect(() => {
   const fetchStations = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/getpolice-stations');
+      const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/getpolice-stations');
       const json = await response.json();
       if (json.success) {
         setStations(json.data);
@@ -261,7 +261,7 @@ const confirmDeleteStation = async () => {
   if (!deleteStationId) return;
 
   try {
-    const response = await fetch(`http://localhost:5000/api/stations/${deleteStationId}`, {
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/stations/${deleteStationId}`, {
       method: 'DELETE',
     });
 
@@ -302,7 +302,7 @@ const handleDelete = (_id: string) => {
 //   if (!confirmDelete) return;
 
 //   try {
-//     const response = await fetch(`http://localhost:5000/api/stations/${_id}`, {
+//     const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/stations/${_id}`, {
 //       method: 'DELETE',
 //     });
 
@@ -361,7 +361,7 @@ const handleUpdate = async () => {
 
   try {
     // ✅ API call to update the station in the backend using _id
-    const response = await fetch(`http://localhost:5000/api/stations/${_id}`, {
+    const response = await fetch(`https://zaibtenpoliceserver.vercel.app/api/stations/${_id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
