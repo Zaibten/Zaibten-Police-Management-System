@@ -23,6 +23,7 @@ export default function AddStation() {
     firsRegistered: '0',
     latitude: '',
   longitude: '',
+  
   });
 
   const [initialLocation, setInitialLocation] = useState('');
@@ -36,6 +37,17 @@ export default function AddStation() {
 
   const GOOGLE_API_KEY = 'AIzaSyDYNJVSQHG-_I6eC6VXqhSrcpYmXTKWtU8';
   const [serverError, setServerError] = React.useState('');
+
+  // Inside AddStation component, add:
+const [imageFile, setImageFile] = useState<File | null>(null);
+
+// Add this handler for file input change:
+const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files.length > 0) {
+    setImageFile(e.target.files[0]);
+  }
+};
+
 
 
   useEffect(() => {
@@ -185,46 +197,41 @@ const reverseGeocode = (lat: number, lng: number, setInitial = false) => {
     if (vehicles.length === 0) newErrors.vehicles = 'At least one vehicle must be selected.';
     if (!formData.latitude.trim()) newErrors.latitude = 'Latitude is required.';
 if (!formData.longitude.trim()) newErrors.longitude = 'Longitude is required.';
+ // Validate image required
+  if (!imageFile) {
+    newErrors.image = 'Station image is required.';
+  }
 
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  //  const handleSubmit = () => {
-  //   if (!validate()) return;
-
-  //   setModalVisible(true);
-  //   setFormData({
-  //     name: '',
-  //     location: initialLocation, // Restore fetched location instead of blank
-  //     incharge: '',
-  //     contact: '',
-  //     jailCapacity: '0',
-  //     cctvCameras: '0',
-  //     firsRegistered: '0',
-  //   latitude: '',
-  // longitude: '',
-  //   });
-  //   setWeapons([]);
-  //   setVehicles([]);
-  //   if (marker && map) {
-  //     const defaultPos = { lat: 24.8607, lng: 67.0011 };
-  //     marker.setPosition(defaultPos);
-  //     map.panTo(defaultPos);
-  //   }
-  // };
-
 const handleSubmit = () => {
   if (!validate()) return;
 
-  const completeData = {
-    ...formData,
-    weapons,
-    vehicles,
-  };
+  // Prepare form data for multipart/form-data
+  const formPayload = new FormData();
 
-  axios.post('https://zaibtenpoliceserver.vercel.app/api/police-station', completeData)
+  // Append all fields except arrays first
+  Object.entries(formData).forEach(([key, value]) => {
+    formPayload.append(key, value);
+  });
+
+  // Append arrays as JSON strings
+  formPayload.append('weapons', JSON.stringify(weapons));
+  formPayload.append('vehicles', JSON.stringify(vehicles));
+
+  // Append the image file if any
+  if (imageFile) {
+    formPayload.append('image', imageFile);
+  }
+
+  axios.post('http://localhost:5000/api/police-station', formPayload, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
     .then(res => {
       console.log("Saved:", res.data);
       setModalVisible(true); // Show modal on success
@@ -244,6 +251,7 @@ const handleSubmit = () => {
       });
       setWeapons([]);
       setVehicles([]);
+      setImageFile(null); // Clear image input
 
       if (marker && map) {
         const defaultPos = { lat: 24.8607, lng: 67.0011 };
@@ -252,7 +260,7 @@ const handleSubmit = () => {
       }
     })
     .catch(err => {
-       console.error("Error saving station:", err.response?.data || err.message);
+      console.error("Error saving station:", err.response?.data || err.message);
       if (err.response?.status === 409) {
         setServerError(err.response.data.message); // Duplicate error
       } else {
@@ -446,6 +454,34 @@ return (
         <p className="text-red-600 text-sm mt-1">{errors.vehicles}</p>
       )}
     </div>
+
+    <div>
+  <label htmlFor="image" className="block mb-1 font-semibold">
+  Upload Station Image <span className="text-red-600">*</span>
+</label>
+<input
+  type="file"
+  id="image"
+  accept="image/*"
+  onChange={handleImageChange}
+  className={`border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+    errors.image ? 'border-red-500' : 'border-gray-300'
+  }`}
+  required
+/>
+{/* Show image preview if imageFile is selected */}
+{imageFile && (
+  <img
+    src={URL.createObjectURL(imageFile)}
+    alt="Uploaded Station"
+    className="mt-2 max-h-48 rounded border"
+/>
+)}
+{/* Show error message if image is missing */}
+{errors.image && <p className="text-red-600 text-sm mt-1">{errors.image}</p>}
+
+</div>
+
 <style>{`
   .error-message {
     color: #e74c3c;
