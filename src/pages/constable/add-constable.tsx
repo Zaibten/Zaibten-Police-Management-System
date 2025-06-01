@@ -49,7 +49,7 @@ const AddConstablePage: React.FC = () => {
     const fetchStations = async () => {
       try {
         const response = await fetch(
-          'http://localhost:5000/api/police-stationsfordropdown'
+          'https://zaibtenpoliceserver.vercel.app/api/police-stationsfordropdown'
         )
         const data = await response.json()
         setPoliceStationsList(
@@ -163,7 +163,7 @@ if (!formData.imageFile) {
       form.append('weapons', JSON.stringify(formData.weapons))
       form.append('vehicles', JSON.stringify(formData.vehicles))
 
-      const response = await fetch('http://localhost:5000/api/constables/', {
+      const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/constables/', {
         method: 'POST',
         body: form, // No need to set Content-Type
       })

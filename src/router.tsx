@@ -56,6 +56,12 @@ const router = createBrowserRouter([
     Component: (await import('./pages/duty')).default,
   }),
 },
+{
+  path: 'dutydetail',
+  lazy: async () => ({
+    Component: (await import('./pages/dutydetail')).default,
+  }),
+},
       {
         // no path
         lazy: async () => ({
