@@ -1,4 +1,4 @@
-import { IconBrandProducthunt, IconCalendarBolt, IconChecklist, IconHexagonNumber1, IconHome, IconLogout, IconMan, IconUser,} from "@tabler/icons-react"
+import { IconBrandProducthunt, IconCalendarBolt, IconChecklist, IconHexagonNumber1, IconHome, IconLiveView, IconLogout, IconMan, IconUser,} from "@tabler/icons-react"
 import {UserCircle2Icon } from "lucide-react"
 
 
@@ -100,6 +100,12 @@ export const sidelinks: SideLink[] = [
     label: '',
     href: '/adminusers',
     icon: <UserCircle2Icon size={18} />,
+  },
+    {
+    title: 'View Users',
+    label: '',
+    href: '/viewusers',
+    icon: <IconLiveView size={18} />,
   },
   {
     title: 'Logout',

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -20,6 +20,7 @@ type Duty = {
   toDate?: string
   batchNumber: string
   remarks: string
+  dutyCategory: string
 }
 
 export default function Home() {
@@ -35,23 +36,56 @@ export default function Home() {
   const [toDate, setToDate] = useState('')
   // At the top of your component
   const [stationFilter, setStationFilter] = useState('')
+  const tableRef = useRef<HTMLTableElement>(null)
   const stationOptions = [
     ...new Set(duties.map((d) => d.policeStation).filter(Boolean)),
   ] // Unique stations
+
+  const [statusFilter, setStatusFilter] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
 
   const filteredDuties = duties.filter((duty) => {
     const matchesSearch = duty.badgeNumber
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
-    const dutyDate = new Date(duty.dutyDate)
 
+    const dutyDate = new Date(duty.dutyDate)
     const matchesFrom = fromDate ? new Date(fromDate) <= dutyDate : true
     const matchesTo = toDate ? dutyDate <= new Date(toDate) : true
     const matchesStation = stationFilter
       ? duty.policeStation === stationFilter
       : true
 
-    return matchesSearch && matchesFrom && matchesTo && matchesStation
+    // Compute status here as in the table
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const toDateObj = duty.toDate ? new Date(duty.toDate) : null
+    const dutyDateObj = duty.dutyDate ? new Date(duty.dutyDate) : null
+
+    if (toDateObj) toDateObj.setHours(0, 0, 0, 0)
+    if (dutyDateObj) dutyDateObj.setHours(0, 0, 0, 0)
+
+    const isCompleted =
+      (toDateObj && toDateObj < today) ||
+      (!toDateObj && dutyDateObj && dutyDateObj < today)
+    const computedStatus = isCompleted ? 'Completed' : 'Pending'
+
+    const matchesStatus = statusFilter
+      ? computedStatus.toLowerCase() === statusFilter.toLowerCase()
+      : true
+
+    const matchesCategory = categoryFilter
+      ? duty.dutyCategory === categoryFilter
+      : true
+
+    return (
+      matchesSearch &&
+      matchesFrom &&
+      matchesTo &&
+      matchesStation &&
+      matchesStatus &&
+      matchesCategory
+    )
   })
 
   // Then paginate the filtered list instead of all duties
@@ -67,7 +101,7 @@ export default function Home() {
   useEffect(() => {
     setLoading(true)
     axios
-      .get('https://zaibtenpoliceserver.vercel.app/api/duties')
+      .get('http://localhost:5000/api/duties')
       .then((response) => setDuties(response.data))
       .catch((error) => console.error('Error fetching duties:', error))
       .finally(() => setLoading(false))
@@ -116,7 +150,7 @@ export default function Home() {
 
     try {
       const response = await axios.delete(
-        `https://zaibtenpoliceserver.vercel.app/api/duties/${deleteDutyId}`
+        `http://localhost:5000/api/duties/${deleteDutyId}`
       )
       if (response.status === 200) {
         setDuties((prev) => prev.filter((duty) => duty._id !== deleteDutyId))
@@ -137,7 +171,7 @@ export default function Home() {
     if (!selectedDuty) return
 
     axios
-      .put(`https://zaibtenpoliceserver.vercel.app/api/duties/${selectedDuty._id}`, selectedDuty)
+      .put(`http://localhost:5000/api/duties/${selectedDuty._id}`, selectedDuty)
       .then((res) => {
         if (res.status === 200) {
           setSuccessModalVisible(true) // ✅ Show success modal
@@ -155,8 +189,183 @@ export default function Home() {
       })
   }
 
+  const handleDownloadPDF = () => {
+    if (!tableRef.current) return
+
+    // Extract data from the original table rows (excluding header)
+    const rows = Array.from(tableRef.current.querySelectorAll('tbody tr'))
+
+    // Prepare an array of objects representing each record
+    const records = rows.map((row) => {
+      const cells = Array.from(row.querySelectorAll('td'))
+      return {
+        badgeNo: cells[1]?.textContent || '',
+        name: cells[2]?.textContent || '',
+        rank: cells[3]?.textContent || '',
+        contact: cells[4]?.textContent || '',
+        station: cells[5]?.textContent || '',
+        location: cells[6]?.textContent || '',
+        xCoord: cells[7]?.textContent || '',
+        yCoord: cells[8]?.textContent || '',
+        shift: cells[9]?.textContent || '',
+        dutyType: cells[10]?.textContent || '',
+        dutyCategory: cells[11]?.textContent || '',
+        date: cells[12]?.textContent || '',
+        fromTime: cells[13]?.textContent || '',
+        toTime: cells[14]?.textContent || '',
+        totalDays: cells[15]?.textContent || '',
+        remarks: cells[16]?.textContent || '',
+        status2: cells[17]?.textContent || '',
+        // skipping last cell (Action)
+      }
+    })
+
+    const logoUrl = '/logo.png' // Your actual logo path
+
+    const htmlContent = `
+    <html>
+      <head>
+        <title>Policeman Duty Details Report</title>
+        <style>
+          @page {
+            margin: 40px 40px 80px 40px;
+          }
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #1f2937;
+            background: #fff;
+            font-size: 14px;
+          }
+          .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 30px 10px 100px 10px;
+            box-sizing: border-box;
+          }
+          .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          img.logo {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
+            display: inline-block;
+          }
+          h2 {
+            text-align: center;
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 28px;
+            margin: 10px 0 40px 0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
+          }
+          .record {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: #f9fafb;
+            page-break-inside: avoid;
+          }
+          .record-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+          }
+          .record-item strong {
+            color: #1e40af;
+            width: 140px;
+            display: inline-block;
+          }
+          .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fff;
+          }
+          .footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+          }
+          .footer a:hover {
+            text-decoration: underline;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo-container">
+            <img class="logo" src="${logoUrl}" alt="App Logo" />
+          </div>
+          <h2>POLICEMAN DUTY DETAILS</h2>
+          ${records
+            .map(
+              (record) => `
+            <div class="record">
+              <div class="record-item"><strong>Badge No:</strong> ${record.badgeNo}</div>
+              <div class="record-item"><strong>Name:</strong> ${record.name}</div>
+              <div class="record-item"><strong>Rank:</strong> ${record.rank}</div>
+              <div class="record-item"><strong>Contact:</strong> ${record.contact}</div>
+              <div class="record-item"><strong>Station:</strong> ${record.station}</div>
+              <div class="record-item"><strong>Location:</strong> ${record.location}</div>
+              <div class="record-item"><strong>X Coord:</strong> ${record.xCoord}</div>
+              <div class="record-item"><strong>Y Coord:</strong> ${record.yCoord}</div>
+              <div class="record-item"><strong>Shift:</strong> ${record.shift}</div>
+              <div class="record-item"><strong>Days:</strong> ${record.dutyType}</div>
+              <div class="record-item"><strong>Type:</strong> ${record.dutyCategory}</div>
+              <div class="record-item"><strong>Date:</strong> ${record.date}</div>
+              <div class="record-item"><strong>From:</strong> ${record.fromTime}</div>
+              <div class="record-item"><strong>To:</strong> ${record.toTime}</div>
+              <div class="record-item"><strong>Total Days:</strong> ${record.totalDays}</div>
+              <div class="record-item"><strong>Remarks:</strong> ${record.remarks}</div>
+              <div class="record-item"><strong>Status:</strong> ${record.status2}</div>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+        <div class="footer">
+          &copy; ${new Date().getFullYear()} Zaibten Info &nbsp;&bull;&nbsp;
+          <a href="https://zaibteninfo.com/" target="_blank" rel="noopener noreferrer">zaibteninfo.com</a> &nbsp;&bull;&nbsp;
+          Phone: <a href="tel:+14244830630">(+1) 424-483-0630</a>
+        </div>
+      </body>
+    </html>
+  `
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700')
+    if (printWindow) {
+      printWindow.document.open()
+      printWindow.document.write(htmlContent)
+      printWindow.document.close()
+
+      printWindow.onload = () => {
+        printWindow.focus()
+        printWindow.print()
+        // printWindow.close();
+      }
+    } else {
+      alert('Please allow popups for this website to download the PDF.')
+    }
+  }
+
   return (
-    <div className='min-h-screen bg-white p-6 dark:bg-gray-900'>
+    <div className="h-[100vh] overflow-y-auto bg-white p-6 dark:bg-gray-900">
       <h2 className='mb-8 text-center text-3xl font-bold text-blue-700'>
         POLICEMAN DUTY DETAILS
       </h2>
@@ -166,7 +375,7 @@ export default function Home() {
         <div className='flex-1'>
           <input
             type='text'
-            placeholder='Search by Badge Number'
+            placeholder='Badge Number'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className='w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -238,11 +447,64 @@ export default function Home() {
               setFromDate('')
               setToDate('')
               setStationFilter('')
+              setStatusFilter('')
+              setCategoryFilter('')
             }}
             className='rounded-md bg-red-500 px-4 py-2 text-white shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400'
           >
             Clear
           </button>
+        </div>
+
+        {/* Download PDF Button */}
+        <div className='flex items-center'>
+          <button
+            onClick={handleDownloadPDF}
+            className='rounded-md bg-green-600 px-4 py-2 text-white shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400'
+          >
+            Download as PDF
+          </button>
+        </div>
+      </div>
+
+      <div className='flex flex-col space-y-4 md:flex-row md:items-center md:justify-center md:space-x-6 md:space-y-0'>
+        {/* Status Filter */}
+        <div className='flex flex-col md:flex-row md:items-center md:space-x-2'>
+          <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+            Status:
+          </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className='rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white'
+          >
+            <option value=''>All</option>
+            <option value='Completed'>Completed</option>
+            <option value='Pending'>Pending</option>
+          </select>
+        </div>
+
+        {/* Duty Category Filter */}
+        <div className='flex flex-col md:flex-row md:items-center md:space-x-2'>
+          <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+            Category:
+          </label>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className='rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white'
+          >
+            <option value=''>All</option>
+            <option value='Patrol'>Patrol</option>
+            <option value='Security'>Security</option>
+            <option value='VIP Escort'>VIP Escort</option>
+            <option value='VIP Security'>VIP Security</option>
+            <option value='Investigation'>Investigation</option>
+            <option value='Checkpoint'>Checkpoint</option>
+            <option value='Court Duty'>Court Duty</option>
+            <option value='Traffic Control'>Traffic Control</option>
+            <option value='Other'>Other</option>
+          </select>
         </div>
       </div>
 
@@ -319,22 +581,27 @@ export default function Home() {
           No records yet.
         </div>
       ) : (
-        <div className='scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 max-h-[70vh] overflow-x-auto overflow-y-auto rounded-lg border border-gray-300 shadow dark:border-gray-700'>
-          <table className='w-full min-w-[1300px] text-sm text-gray-800 dark:text-gray-200'>
+        <div className='scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 max-h-[100vh] overflow-x-auto overflow-y-auto rounded-lg border border-gray-300 shadow dark:border-gray-700'>
+          <table
+            ref={tableRef}
+            className='w-full min-w-[1300px] text-sm text-gray-800 dark:text-gray-200'
+          >
             <thead className='sticky top-0 z-10 bg-gray-200 text-xs uppercase text-gray-700 dark:bg-gray-800 dark:text-gray-300'>
               <tr>
+                        <th className='border border-gray-300 px-4 py-3 text-left font-semibold dark:border-gray-700'>S.No</th>
+
                 {[
                   'Badge No',
                   'Name',
                   'Rank',
-                  'Status',
                   'Contact',
                   'Station',
                   'Location',
                   'X Coord',
                   'Y Coord',
                   'Shift',
-                  'Duty Type',
+                  'Days',
+                  'Type',
                   'Date',
                   'From',
                   'To',
@@ -362,6 +629,8 @@ export default function Home() {
                       : 'bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700'
                   }
                 >
+                            <td className='border px-4 py-2 dark:border-gray-700'>{idx + 1}</td> {/* S.No */}
+
                   <td className='border px-4 py-2 dark:border-gray-700'>
                     {duty.badgeNumber}
                   </td>
@@ -370,9 +639,6 @@ export default function Home() {
                   </td>
                   <td className='border px-4 py-2 dark:border-gray-700'>
                     {duty.rank}
-                  </td>
-                  <td className='border px-4 py-2 dark:border-gray-700'>
-                    {duty.status}
                   </td>
                   <td className='border px-4 py-2 dark:border-gray-700'>
                     {duty.contact}
@@ -396,6 +662,9 @@ export default function Home() {
                     {duty.dutyType}
                   </td>
                   <td className='border px-4 py-2 dark:border-gray-700'>
+                    {duty.dutyCategory}
+                  </td>
+                  <td className='border px-4 py-2 dark:border-gray-700'>
                     {new Date(duty.dutyDate).toLocaleDateString()}
                   </td>
                   <td className='border px-4 py-2 dark:border-gray-700'>
@@ -415,43 +684,39 @@ export default function Home() {
                     {duty.remarks ? duty.remarks : 'No remarks till now'}
                   </td>
 
-<td
-  className="border px-4 py-4 dark:border-gray-700 text-center"
-  style={{ minWidth: '130px' }}
->
-  {(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Remove time
+                  <td
+                    className='border px-4 py-4 text-center dark:border-gray-700'
+                    style={{ minWidth: '130px' }}
+                  >
+                    {(() => {
+                      const today = new Date()
+                      today.setHours(0, 0, 0, 0) // Remove time
 
-    const toDate = duty.toDate ? new Date(duty.toDate) : null;
-    const dutyDate = duty.dutyDate ? new Date(duty.dutyDate) : null;
+                      const toDate = duty.toDate ? new Date(duty.toDate) : null
+                      const dutyDate = duty.dutyDate
+                        ? new Date(duty.dutyDate)
+                        : null
 
-    if (toDate) toDate.setHours(0, 0, 0, 0);
-    if (dutyDate) dutyDate.setHours(0, 0, 0, 0);
+                      if (toDate) toDate.setHours(0, 0, 0, 0)
+                      if (dutyDate) dutyDate.setHours(0, 0, 0, 0)
 
-    const isCompleted =
-      (toDate && toDate < today) ||
-      (!toDate && dutyDate && dutyDate < today);
+                      const isCompleted =
+                        (toDate && toDate < today) ||
+                        (!toDate && dutyDate && dutyDate < today)
 
-    return (
-      <span
-        className={`inline-block font-semibold px-3 py-1 rounded ${
-          isCompleted
-            ? 'bg-green-500 text-white'
-            : 'bg-yellow-400 text-black'
-        }`}
-      >
-        {isCompleted ? 'Completed' : 'In Progress'}
-      </span>
-    );
-  })()}
-</td>
-
-
-
-
-
-                  
+                      return (
+                        <span
+                          className={`inline-block rounded px-3 py-1 font-semibold ${
+                            isCompleted
+                              ? 'bg-green-500 text-white'
+                              : 'bg-yellow-400 text-black'
+                          }`}
+                        >
+                          {isCompleted ? 'Completed' : 'In Progress'}
+                        </span>
+                      )
+                    })()}
+                  </td>
 
                   <td className='flex flex-wrap items-center gap-2 px-4 py-2'>
                     <button
@@ -539,7 +804,7 @@ export default function Home() {
                 onClick={handleSubmitUpdate}
                 className='rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600'
               >
-                Update Duty
+                Update Cordinates
               </button>
             </div>
           </div>

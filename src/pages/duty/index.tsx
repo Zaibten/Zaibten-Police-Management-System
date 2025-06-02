@@ -29,6 +29,7 @@ const Duty: React.FC = () => {
     dutyDate: '',
     fromDate: '',
     toDate: '',
+    dutyCategory: '', // New field
   })
 
   const handleSearch = async () => {
@@ -39,7 +40,7 @@ const Duty: React.FC = () => {
     setLoading(true)
     try {
       const response = await fetch(
-        `https://zaibtenpoliceserver.vercel.app/api/constable/${badgeNumber.trim()}`
+        `http://localhost:5000/api/constable/${badgeNumber.trim()}`
       )
       if (!response.ok) throw new Error('Policeman not found')
       const data = await response.json()
@@ -108,29 +109,31 @@ const Duty: React.FC = () => {
     }
 
     // Prepare data for API
-    const payload = {
-      badgeNumber: policeman.badgeNumber,
-      name: policeman.name,
-      rank: policeman.rank,
-      status: policeman.status,
-      contact: policeman.contact,
-      policeStation: policeman.policeStation,
-      location: formData.location,
-      xCoord: Number(formData.xCoord),
-      yCoord: Number(formData.yCoord),
-      shift: formData.shift,
-      dutyType: formData.dutyType,
-      dutyDate:
-        formData.dutyType === 'single' ? formData.dutyDate : formData.fromDate,
-      fromDate:
-        formData.dutyType === 'multiple' ? formData.fromDate : undefined,
-      toDate: formData.dutyType === 'multiple' ? formData.toDate : undefined,
-      batchNumber: 'Batch1',
-      remarks: '',
-    }
+const payload = {
+  badgeNumber: policeman.badgeNumber,
+  name: policeman.name,
+  rank: policeman.rank,
+  status: policeman.status,
+  contact: policeman.contact,
+  policeStation: policeman.policeStation,
+  location: formData.location,
+  xCoord: Number(formData.xCoord),
+  yCoord: Number(formData.yCoord),
+  shift: formData.shift,
+  dutyType: formData.dutyType,
+  dutyDate:
+    formData.dutyType === 'single' ? formData.dutyDate : formData.fromDate,
+  fromDate:
+    formData.dutyType === 'multiple' ? formData.fromDate : undefined,
+  toDate: formData.dutyType === 'multiple' ? formData.toDate : undefined,
+  batchNumber: 'Batch1',
+  remarks: '',
+  dutyCategory: formData.dutyCategory, // ✅ Added
+}
+
 
     try {
-      const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/assign-duty', {
+      const res = await fetch('http://localhost:5000/api/assign-duty', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -152,6 +155,7 @@ const Duty: React.FC = () => {
         dutyDate: '',
         fromDate: '',
         toDate: '',
+        dutyCategory: '', // New field
       })
       setBadgeNumber('')
       setPoliceman(null)
@@ -296,6 +300,33 @@ const Duty: React.FC = () => {
                              text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:text-white'
               />
             </div>
+
+            <div>
+  <label className='mb-1 block text-lg font-medium text-gray-700 dark:text-gray-300'>
+    Duty Type
+  </label>
+  <select
+  name='dutyCategory'
+  value={formData.dutyCategory}
+  onChange={handleChange}
+  required
+  className='w-full rounded-lg border bg-gray-100 px-4 py-3 text-lg
+             text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:text-white'
+>
+  <option value=''>Select Type</option>
+  <option value='Patrol'>Patrol</option>
+  <option value='Security'>Security</option>
+  <option value='VIP Escort'>VIP Escort</option>
+  <option value='VIP Security'>VIP Security</option>
+  <option value='Investigation'>Investigation</option>
+  <option value='Checkpoint'>Checkpoint</option>
+  <option value='Court Duty'>Court Duty</option>
+  <option value='Traffic Control'>Traffic Control</option>
+  <option value='Other'>Other</option>
+</select>
+
+</div>
+
 
             <div>
               <label className='mb-1 block text-lg font-medium text-gray-700 dark:text-gray-300'>

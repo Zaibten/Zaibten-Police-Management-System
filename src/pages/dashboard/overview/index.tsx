@@ -19,64 +19,34 @@ export default function DashboardPage() {
   const infoWindowsRef = useRef<google.maps.InfoWindow[]>([])
   const [mapLoaded, setMapLoaded] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const defaultCenter = { lat: 24.8607, lng: 67.0011 }
   const defaultZoom = 13
   const targetZoom = 19
-const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
 
-const policeLocations = [
-  {
-    lat: 24.8615,
-    lng: 67.0099,
-    name: 'Officer Ahmed',
-    status: 'On Patrol',
-    lastUpdated: 'Just now',
-  },
-  {
-    lat: 24.8672,
-    lng: 67.0221,
-    name: 'Officer Ayesha',
-    status: 'Responding to Incident',
-    lastUpdated: '1 min ago',
-  },
-  {
-    lat: 24.8743,
-    lng: 67.0453,
-    name: 'Officer Bilal',
-    status: 'Stationary Checkpoint',
-    lastUpdated: '3 mins ago',
-  },
-  {
-    lat: 24.8593,
-    lng: 67.0388,
-    name: 'Officer Zara',
-    status: 'Traffic Control',
-    lastUpdated: '2 mins ago',
-  },
-  {
-    lat: 24.8701,
-    lng: 67.0259,
-    name: 'Officer Usman',
-    status: 'On Patrol',
-    lastUpdated: 'Just now',
-  },
-  {
-    lat: 24.8765,
-    lng: 67.0185,
-    name: 'Officer Fatima',
-    status: 'Assisting Civilians',
-    lastUpdated: '30 secs ago',
-  },
-  {
-    lat: 24.8572,
-    lng: 67.0123,
-    name: 'Officer Daniyal',
-    status: 'Investigating Report',
-    lastUpdated: '4 mins ago',
-  },
-];
+  const [policeLocations, setPoliceLocations] = useState<any[]>([])
 
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/duties')
+        const data = await res.json()
+        setPoliceLocations(
+          data.map((item: any) => ({
+            ...item,
+            lat: item.xCoord,
+            lng: item.yCoord,
+          }))
+        )
+      } catch (err) {
+        console.error('Error fetching data:', err)
+      }
+    }
+
+    fetchLocations()
+  }, [])
 
   const smoothPanAndZoom = (
     map: google.maps.Map,
@@ -120,10 +90,88 @@ const policeLocations = [
   }
 
   const handlePrev = () => {
-    const prevIndex = (currentIndex - 1 + policeLocations.length) % policeLocations.length
+    const prevIndex =
+      (currentIndex - 1 + policeLocations.length) % policeLocations.length
     setCurrentIndex(prevIndex)
     goToLocation(prevIndex)
   }
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || policeLocations.length === 0) return
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => marker.setMap(null))
+    markersRef.current = []
+    infoWindowsRef.current = []
+
+policeLocations.forEach((officer, index) => {
+  const position = { lat: officer.lat, lng: officer.lng }
+
+  const marker = new google.maps.Marker({
+    position,
+    map: mapInstanceRef.current!,
+    animation: google.maps.Animation.DROP,
+    title: officer.name,
+    icon: {
+      url: '/clipart843843.png',
+      scaledSize: new google.maps.Size(50, 50),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(15, 15),
+    },
+  })
+
+  const infoWindow = new google.maps.InfoWindow({
+    content: `
+      <div>
+        <strong>${officer.name}</strong><br/>
+        <b>Status:</b> ${officer.status}<br/>
+        <b>Rank:</b> ${officer.rank || 'N/A'}<br/>
+        <b>Badge #:</b> ${officer.badgeNumber || 'N/A'}<br/>
+        <b>Duty:</b> ${officer.dutyCategory || 'N/A'}<br/>
+        <b>Contact:</b> ${officer.contact || 'N/A'}
+      </div>
+    `,
+  })
+
+  marker.addListener('click', () => {
+    infoWindowsRef.current.forEach((iw) => iw.close())
+    infoWindow.open(mapInstanceRef.current!, marker)
+    smoothPanAndZoom(mapInstanceRef.current!, position, targetZoom)
+    setCurrentIndex(index)
+  })
+
+  markersRef.current.push(marker)
+  infoWindowsRef.current.push(infoWindow)
+
+  // 🔻 Move your custom overlay INSIDE the loop
+  const markerDiv = document.createElement('div')
+  markerDiv.className = 'pulse-marker'
+  markerDiv.innerText = officer.name
+
+  const overlay = new google.maps.OverlayView()
+  overlay.onAdd = function () {
+    const panes = this.getPanes()
+    panes?.overlayMouseTarget.appendChild(markerDiv)
+  }
+  overlay.draw = function () {
+    const projection = this.getProjection()
+    if (!projection) return
+    const pos = new google.maps.LatLng(officer.lat, officer.lng)
+    const point = projection.fromLatLngToDivPixel(pos)
+    if (point && markerDiv.style) {
+      markerDiv.style.left = point.x + 'px'
+      markerDiv.style.top = point.y + 'px'
+    }
+  }
+  overlay.onRemove = function () {
+    markerDiv.parentNode?.removeChild(markerDiv)
+  }
+  overlay.setMap(mapInstanceRef.current)
+})
+
+
+    
+  }, [policeLocations])
 
   useEffect(() => {
     const loader = new Loader({
@@ -185,7 +233,9 @@ const policeLocations = [
         })
 
         resetControlDiv.appendChild(resetButton)
-        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(resetControlDiv)
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(
+          resetControlDiv
+        )
 
         setMapLoaded(true)
       }
@@ -198,44 +248,66 @@ const policeLocations = [
         <div className='mb-2 flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
         </div>
-   <Tabs defaultValue='overview'>
-  <TabsList>
-    <TabsTrigger value='overview'>Show Police Patrol</TabsTrigger>
-    <TabsTrigger value='analytics'>Show Police Station</TabsTrigger>
-  </TabsList>
-  <TabsContent value='overview'>This is the Overview</TabsContent>
-  <TabsContent value='analytics'>This is Analytics</TabsContent>
-</Tabs>
+        <Tabs defaultValue='overview'>
+          <TabsList>
+            <TabsTrigger value='overview'>Show Police Patrol</TabsTrigger>
+            <TabsTrigger value='analytics'>Show Police Station</TabsTrigger>
+          </TabsList>
+          <TabsContent value='overview'>This is the Overview</TabsContent>
+          <TabsContent value='analytics'>This is Analytics</TabsContent>
+        </Tabs>
 
-        <Tabs orientation='vertical' defaultValue='analytics' className='space-y-4'>
+        <Tabs
+          orientation='vertical'
+          defaultValue='analytics'
+          className='space-y-4'
+        >
           <TabsContent value='analytics' className='space-y-4'>
-            <div className="mb-4">
-  <input
-    type="text"
-    placeholder="Search Officer by Name..."
-    value={searchTerm}
-    onChange={(e) => {
-      const term = e.target.value
-      setSearchTerm(term)
+            <div className='mb-4'>
+              <input
+                ref={searchInputRef} // <-- add this
+                type='text'
+                placeholder='Search Officer by Name...'
+                value={searchTerm}
+                onChange={(e) => {
+                  const term = e.target.value
+                  setSearchTerm(term)
 
-      const index = policeLocations.findIndex((officer) =>
-        officer.name.toLowerCase().includes(term.toLowerCase())
-      )
+                  if (term.trim() === '') {
+                    // Reset map view if search box is empty
+                    if (mapInstanceRef.current) {
+                      mapInstanceRef.current.panTo(defaultCenter)
+                      mapInstanceRef.current.setZoom(defaultZoom)
+                      // Optionally, close all info windows too
+                      infoWindowsRef.current.forEach((iw) => iw.close())
+                    }
+                    setCurrentIndex(0) // Optionally reset current index as well
+                    return
+                  }
 
-      if (index !== -1) {
-        setCurrentIndex(index)
-        goToLocation(index)
-      }
-    }}
-    className="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200"
-  />
-</div>
+                  const index = policeLocations.findIndex((officer) =>
+                    officer.name.toLowerCase().includes(term.toLowerCase())
+                  )
+
+                  if (index !== -1) {
+                    setCurrentIndex(index)
+                    goToLocation(index)
+                    // Refocus input after map moves
+                    setTimeout(() => {
+                      searchInputRef.current?.focus()
+                    }, 100)
+                  }
+                }}
+                className='w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200'
+              />
+            </div>
 
             <Card>
               <CardHeader>
                 <CardTitle>Live Police Patrol Locations</CardTitle>
                 <CardDescription>
-                  Animated markers always visible with reset map control. Click on markers or use navigation buttons to zoom and view status.
+                  Animated markers always visible with reset map control. Click
+                  on markers or use navigation buttons to zoom and view status.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -248,21 +320,23 @@ const policeLocations = [
                     marginBottom: '1rem',
                   }}
                 />
-              <div className="flex justify-center gap-6">
-  <button
-    onClick={handlePrev}
-    className="
+                <div className='flex justify-center gap-6'>
+                  <button
+                    onClick={handlePrev}
+                    className='
       relative
       inline-flex
+      cursor-pointer
+      select-none
       items-center
-      gap-2
-      rounded-md
-      bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600
-      px-6 py-3
+      gap-2 rounded-md bg-gradient-to-r from-indigo-600
+      via-blue-600 to-cyan-600
+      px-6
+      py-3
       font-semibold
-      text-white
-      shadow-lg
-      ring-1 ring-indigo-700/30
+      text-white shadow-lg
+      ring-1
+      ring-indigo-700/30
       transition
       duration-300
       ease-in-out
@@ -272,39 +346,43 @@ const policeLocations = [
       focus:outline-none
       focus-visible:ring-4
       focus-visible:ring-indigo-400
-      select-none
-      cursor-pointer
-    "
-    aria-label="Previous Location"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-      aria-hidden="true"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>
-    Previous
-  </button>
+    '
+                    aria-label='Previous Location'
+                  >
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='h-5 w-5'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                      strokeWidth={2}
+                      aria-hidden='true'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M15 19l-7-7 7-7'
+                      />
+                    </svg>
+                    Previous
+                  </button>
 
-  <button
-    onClick={handleNext}
-    className="
+                  <button
+                    onClick={handleNext}
+                    className='
       relative
       inline-flex
+      cursor-pointer
+      select-none
       items-center
-      gap-2
-      rounded-md
-      bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600
-      px-6 py-3
+      gap-2 rounded-md bg-gradient-to-r from-indigo-600
+      via-blue-600 to-cyan-600
+      px-6
+      py-3
       font-semibold
-      text-white
-      shadow-lg
-      ring-1 ring-indigo-700/30
+      text-white shadow-lg
+      ring-1
+      ring-indigo-700/30
       transition
       duration-300
       ease-in-out
@@ -314,26 +392,27 @@ const policeLocations = [
       focus:outline-none
       focus-visible:ring-4
       focus-visible:ring-indigo-400
-      select-none
-      cursor-pointer
-    "
-    aria-label="Next Location"
-  >
-    Next
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-      aria-hidden="true"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-    </svg>
-  </button>
-</div>
-
+    '
+                    aria-label='Next Location'
+                  >
+                    Next
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='h-5 w-5'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      stroke='currentColor'
+                      strokeWidth={2}
+                      aria-hidden='true'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M9 5l7 7-7 7'
+                      />
+                    </svg>
+                  </button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
