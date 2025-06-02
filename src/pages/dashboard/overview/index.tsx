@@ -31,7 +31,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/duties')
+        const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/duties')
         const data = await res.json()
         setPoliceLocations(
           data.map((item: any) => ({
