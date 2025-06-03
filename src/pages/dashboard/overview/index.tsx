@@ -259,22 +259,43 @@ export default function DashboardPage() {
   return (
     <Layout>
       <Layout.Body>
-          <marquee
+<div
+  style={{
+    width: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    backgroundColor: '#f0f8ff',
+    borderRadius: '5px',
+    padding: '5px 10px',
+    marginBottom: '10px',
+  }}
+>
+  <div
     style={{
-      color: '#0b5394',
+      display: 'inline-block',
+      animation: 'scroll-left 15s linear infinite',
       fontWeight: 600,
       fontSize: '14px',
-      backgroundColor: '#f0f8ff',
-      padding: '5px 10px',
-      borderRadius: '5px',
-      width: '100%',
-      marginBottom: '10px',
+      color: '#0b5394',
     }}
-    behavior="scroll"
-    direction="left"
   >
     Police Management System: Ensuring law and order, serving with honor, and protecting the community.
-  </marquee>
+  </div>
+
+  <style>
+    {`
+      @keyframes scroll-left {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+    `}
+  </style>
+</div>
+
         <div className='mb-4 flex items-center justify-between'>
   <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
   <div className='flex items-center gap-3'>
