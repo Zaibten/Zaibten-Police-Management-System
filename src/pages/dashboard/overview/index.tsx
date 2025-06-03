@@ -18,7 +18,7 @@ import {
   MyRadarChart,
   MyAreaBumpChart,
   MyHeatMapChart,
-  MyStreamChart,
+  // MyStreamChart,
   MyFunnelChart,
   MyScatterPlot,
   MySankeyChart,
@@ -28,9 +28,6 @@ import {
   MyCalendarHeatmap,
   MyCirclePackingChart,
 } from './Charts' // Adjust path if needed
-
-
-
 
 export default function DashboardPage() {
   const mapRef = useRef<HTMLDivElement>(null)
@@ -51,7 +48,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/duties')
+        const res = await fetch('http://localhost:5000/api/duties')
         const data = await res.json()
         setPoliceLocations(
           data.map((item: any) => ({
@@ -124,24 +121,24 @@ export default function DashboardPage() {
     markersRef.current = []
     infoWindowsRef.current = []
 
-policeLocations.forEach((officer, index) => {
-  const position = { lat: officer.lat, lng: officer.lng }
+    policeLocations.forEach((officer, index) => {
+      const position = { lat: officer.lat, lng: officer.lng }
 
-  const marker = new google.maps.Marker({
-    position,
-    map: mapInstanceRef.current!,
-    animation: google.maps.Animation.DROP,
-    title: officer.name,
-    icon: {
-      url: '/clipart843843.png',
-      scaledSize: new google.maps.Size(50, 50),
-      origin: new google.maps.Point(0, 0),
-      anchor: new google.maps.Point(15, 15),
-    },
-  })
+      const marker = new google.maps.Marker({
+        position,
+        map: mapInstanceRef.current!,
+        animation: google.maps.Animation.DROP,
+        title: officer.name,
+        icon: {
+          url: '/clipart843843.png',
+          scaledSize: new google.maps.Size(50, 50),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(15, 15),
+        },
+      })
 
-  const infoWindow = new google.maps.InfoWindow({
-    content: `
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
       <div>
         <strong>${officer.name}</strong><br/>
         <b>Status:</b> ${officer.status}<br/>
@@ -151,46 +148,43 @@ policeLocations.forEach((officer, index) => {
         <b>Contact:</b> ${officer.contact || 'N/A'}
       </div>
     `,
-  })
+      })
 
-  marker.addListener('click', () => {
-    infoWindowsRef.current.forEach((iw) => iw.close())
-    infoWindow.open(mapInstanceRef.current!, marker)
-    smoothPanAndZoom(mapInstanceRef.current!, position, targetZoom)
-    setCurrentIndex(index)
-  })
+      marker.addListener('click', () => {
+        infoWindowsRef.current.forEach((iw) => iw.close())
+        infoWindow.open(mapInstanceRef.current!, marker)
+        smoothPanAndZoom(mapInstanceRef.current!, position, targetZoom)
+        setCurrentIndex(index)
+      })
 
-  markersRef.current.push(marker)
-  infoWindowsRef.current.push(infoWindow)
+      markersRef.current.push(marker)
+      infoWindowsRef.current.push(infoWindow)
 
-  // 🔻 Move your custom overlay INSIDE the loop
-  const markerDiv = document.createElement('div')
-  markerDiv.className = 'pulse-marker'
-  markerDiv.innerText = officer.name
+      // 🔻 Move your custom overlay INSIDE the loop
+      const markerDiv = document.createElement('div')
+      markerDiv.className = 'pulse-marker'
+      markerDiv.innerText = officer.name
 
-  const overlay = new google.maps.OverlayView()
-  overlay.onAdd = function () {
-    const panes = this.getPanes()
-    panes?.overlayMouseTarget.appendChild(markerDiv)
-  }
-  overlay.draw = function () {
-    const projection = this.getProjection()
-    if (!projection) return
-    const pos = new google.maps.LatLng(officer.lat, officer.lng)
-    const point = projection.fromLatLngToDivPixel(pos)
-    if (point && markerDiv.style) {
-      markerDiv.style.left = point.x + 'px'
-      markerDiv.style.top = point.y + 'px'
-    }
-  }
-  overlay.onRemove = function () {
-    markerDiv.parentNode?.removeChild(markerDiv)
-  }
-  overlay.setMap(mapInstanceRef.current)
-})
-
-
-    
+      const overlay = new google.maps.OverlayView()
+      overlay.onAdd = function () {
+        const panes = this.getPanes()
+        panes?.overlayMouseTarget.appendChild(markerDiv)
+      }
+      overlay.draw = function () {
+        const projection = this.getProjection()
+        if (!projection) return
+        const pos = new google.maps.LatLng(officer.lat, officer.lng)
+        const point = projection.fromLatLngToDivPixel(pos)
+        if (point && markerDiv.style) {
+          markerDiv.style.left = point.x + 'px'
+          markerDiv.style.top = point.y + 'px'
+        }
+      }
+      overlay.onRemove = function () {
+        markerDiv.parentNode?.removeChild(markerDiv)
+      }
+      overlay.setMap(mapInstanceRef.current)
+    })
   }, [policeLocations])
 
   useEffect(() => {
@@ -265,102 +259,185 @@ policeLocations.forEach((officer, index) => {
   return (
     <Layout>
       <Layout.Body>
-        <div className='mb-2 flex items-center justify-between space-y-2'>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
-        </div>
+          <marquee
+    style={{
+      color: '#0b5394',
+      fontWeight: 600,
+      fontSize: '14px',
+      backgroundColor: '#f0f8ff',
+      padding: '5px 10px',
+      borderRadius: '5px',
+      width: '100%',
+      marginBottom: '10px',
+    }}
+    behavior="scroll"
+    direction="left"
+  >
+    Police Management System: Ensuring law and order, serving with honor, and protecting the community.
+  </marquee>
+        <div className='mb-4 flex items-center justify-between'>
+  <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+  <div className='flex items-center gap-3'>
+    <span className='text-sm font-semibold text-muted-foreground'>Welcome Admin</span>
+    <img
+      src='logo.png' // 🔄 Replace with your actual icon path
+      alt='Admin Icon'
+      className='h-10 w-10 rounded-full border border-gray-300 shadow'
+    />
+  </div>
+</div>
+
         <Tabs defaultValue='overview'>
           <TabsList>
-            <TabsTrigger value='overview'>Show Duties Daily Update</TabsTrigger>
-            <TabsTrigger value='analytics'>Show Duties Monthly Update</TabsTrigger>
-            <TabsTrigger value='active'>Total Active Users</TabsTrigger>
+            <TabsTrigger value='overview'>Show Full Dashbaord</TabsTrigger>
+            {/* <TabsTrigger value='analytics'>
+              Show Duties Monthly Update
+            </TabsTrigger> */}
+            <TabsTrigger value='active'>Show Patroling Map</TabsTrigger>
           </TabsList>
           <TabsContent value='overview'>
+            {/* Keyframe animations inside style tag for self-contained */}
+            <style>
+              {`
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `}
+            </style>
 
-<div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '20px',
-        justifyContent: 'center',
-      }}
-    >
-      {/* Bar Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyBarChart />
-      </div>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 24,
+                justifyContent: 'center',
+                padding: '2rem',
+              }}
+            >
+              {/* Helper function to generate each chart block with heading */}
+              {[
+                {
+                  id: 'bar',
+                  title: 'PoliceStations per district',
+                  component: <MyBarChart />,
+                },
+                {
+                  id: 'line',
+                  title: 'Duties count per month',
+                  component: <MyLineChart />,
+                },
+                {
+                  id: 'chord',
+                  title: 'Weapons usage count among constables',
+                  component: <MyChordChart />,
+                },
+                {
+                  id: 'calendar',
+                  title: 'Duties per day for last 30 days',
+                  component: <MyCalendarHeatmap />,
+                },
+                {
+                  id: 'circlePacking',
+                  title: 'Count constables per police station',
+                  component: <MyCirclePackingChart />,
+                },
+                {
+                  id: 'pie',
+                  title: 'Constables by gender',
+                  component: <MyPieChart />,
+                },
+                {
+                  id: 'radar',
+                  title: 'Number of constables per rank',
+                  component: <MyRadarChart />,
+                },
+                {
+                  id: 'areaBump',
+                  title: 'Duties count per duty Category',
+                  component: <MyAreaBumpChart />,
+                },
+                {
+                  id: 'heatMap',
+                  title: 'duty Category per month',
+                  component: <MyHeatMapChart />,
+                },
+                // { id: 'stream', title: 'Stream Chart', component: <MyStreamChart /> }, // commented out as in original
+                {
+                  id: 'funnel',
+                  title: 'Number of stations by jail Capacity',
+                  component: <MyFunnelChart />,
+                },
+                {
+                  id: 'scatter',
+                  title: 'Number of constables joining per month',
+                  component: <MyScatterPlot />,
+                },
+                {
+                  id: 'sankey',
+                  title: 'duties between stations and categories',
+                  component: <MySankeyChart />,
+                },
+                {
+                  id: 'waffle',
+                  title: 'constable count grouped by rank',
+                  component: <MyWaffleChart />,
+                },
+                {
+                  id: 'treeMap',
+                  title: 'gender distribution of constables',
+                  component: <MyTreeMapChart />,
+                },
+              ].map(({ id, title, component }) => (
+                <div
+                  key={id}
+                  style={{
+                    flex: '1 1 45%',
+                    minWidth: 400,
+                    height: 500,
+                    animation: 'fadeIn 0.8s ease forwards',
+                    boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                    borderRadius: 12,
+                    background: '#fff',
+                    padding: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <h3
+                    style={{
+                      textAlign: 'center',
+                      marginBottom: 16,
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 700,
+                      fontSize: '1.4rem',
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      background:
+                        'linear-gradient(270deg, #6a11cb, #2575fc, #6a11cb, #f7971e, #f9d423)',
+                      backgroundSize: '500% 500%',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      animation: 'gradientShift 5s ease infinite',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {title}
+                  </h3>
 
-      {/* Line Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyLineChart />
-      </div>
-
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyChordChart />
-      </div>
-
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyCalendarHeatmap />
-      </div>
-
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyCirclePackingChart />
-      </div>
-
-      {/* Pie Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyPieChart />
-      </div>
-
-      {/* Radar Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyRadarChart />
-      </div>
-
-      {/* Area Bump Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyAreaBumpChart />
-      </div>
-
-      {/* HeatMap Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyHeatMapChart />
-      </div>
-
-      {/* Stream Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyStreamChart />
-      </div>
-
-      {/* Funnel Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyFunnelChart />
-      </div>
-
-      {/* Scatter Plot */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyScatterPlot />
-      </div>
-
-      {/* Sankey Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MySankeyChart />
-      </div>
-
-      {/* Waffle Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyWaffleChart />
-      </div>
-
-      {/* TreeMap Chart */}
-      <div style={{ flex: '1 1 45%', minWidth: '800px', animation: 'fadeIn 1s ease-in-out' }}>
-        <MyTreeMapChart />
-      </div>
-
-      
-    </div>
-
+                  <div style={{ width: '100%', height: 350 }}>{component}</div>
+                </div>
+              ))}
+            </div>
           </TabsContent>
-          <TabsContent value='analytics'>This is Analytics</TabsContent>
+          {/* 
+          <TabsContent value='analytics'>This is Analytics</TabsContent> */}
         </Tabs>
 
         <Tabs

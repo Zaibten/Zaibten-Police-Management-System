@@ -101,7 +101,7 @@ export default function Home() {
   useEffect(() => {
     setLoading(true)
     axios
-      .get('https://zaibtenpoliceserver.vercel.app/api/duties')
+      .get('http://localhost:5000/api/duties')
       .then((response) => setDuties(response.data))
       .catch((error) => console.error('Error fetching duties:', error))
       .finally(() => setLoading(false))
@@ -150,7 +150,7 @@ export default function Home() {
 
     try {
       const response = await axios.delete(
-        `https://zaibtenpoliceserver.vercel.app/api/duties/${deleteDutyId}`
+        `http://localhost:5000/api/duties/${deleteDutyId}`
       )
       if (response.status === 200) {
         setDuties((prev) => prev.filter((duty) => duty._id !== deleteDutyId))
@@ -171,7 +171,7 @@ export default function Home() {
     if (!selectedDuty) return
 
     axios
-      .put(`https://zaibtenpoliceserver.vercel.app/api/duties/${selectedDuty._id}`, selectedDuty)
+      .put(`http://localhost:5000/api/duties/${selectedDuty._id}`, selectedDuty)
       .then((res) => {
         if (res.status === 200) {
           setSuccessModalVisible(true) // ✅ Show success modal
