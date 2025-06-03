@@ -306,6 +306,13 @@ export default function ConstablePage() {
                   </td>
                 </tr>
               ))}
+               {currentConstables.length === 0 && (
+              <tr>
+                <td colSpan={13} className='p-4 text-center text-gray-500'>
+                  No policeman found.
+                </td>
+              </tr>
+            )}
             </tbody>
           </table>
         </div>
@@ -671,6 +678,7 @@ export default function ConstablePage() {
                     status,
                     weapons,
                     vehicles,
+                    qualification,
                   } = selectedConstable
 
                   if (
@@ -682,6 +690,7 @@ export default function ConstablePage() {
                     !email ||
                     !policeStation ||
                     !joiningDate ||
+                    !qualification ||
                     !status
                   ) {
                     alert('Please fill in all required fields.')

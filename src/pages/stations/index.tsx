@@ -17,6 +17,8 @@ export default function Stations() {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false)
   const [showSuccessModal, setShowSuccessModal] = React.useState(false)
   const [itemsPerPage, setItemsPerPage] = React.useState(20)
+  const [districtFilter, setDistrictFilter] = useState('');
+
 
   const weaponsList = [
     'Pistols',
@@ -52,6 +54,7 @@ export default function Stations() {
     firsRegistered?: number
     cctvCameras?: number
     [key: string]: any
+    district?: string
   }
 
   useEffect(() => {
@@ -278,14 +281,14 @@ export default function Stations() {
       _id, // make sure _id is destructured here
     } = editStation
 
-    const contactRegex = /^[0-9-\s]{7,15}$/
+    // const contactRegex = /^[0-9-\s]{7,15}$/
 
     if (
       !name?.trim() ||
       !location?.trim() ||
       !incharge?.trim() ||
       !contact?.trim() ||
-      !contactRegex.test(contact) ||
+      // !contactRegex.test(contact) ||
       !jailCapacity ||
       isNaN(Number(jailCapacity)) ||
       !firsRegistered ||
@@ -446,18 +449,45 @@ export default function Stations() {
       )}
 
       <br />
-      <div className='mb-4 flex justify-center'>
-        <input
-          type='text'
-          placeholder='Search by police station name'
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value)
-            setCurrentPage(1) // reset to first page on new search
-          }}
-          className='w-1/2 rounded border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-        />
-      </div>
+<div className='mb-4 flex flex-wrap items-center justify-center gap-4'>
+  {/* Search Input */}
+  <input
+    type='text'
+    placeholder='Search by police station name'
+    value={searchTerm}
+    onChange={(e) => {
+      setSearchTerm(e.target.value);
+      setCurrentPage(1); // reset to first page on new search
+    }}
+    className='w-96 rounded border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+  />
+
+  {/* District Filter */}
+  <div className="flex items-center gap-2">
+    <label htmlFor="districtFilter" className="font-medium text-gray-700">
+      Filter by District:
+    </label>
+    <select
+      id="districtFilter"
+      name="districtFilter"
+      value={districtFilter}
+      onChange={(e) => setDistrictFilter(e.target.value)}
+      className="rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+    >
+      <option value="">All Districts</option>
+      <option value="SOUTH DISTRICT">SOUTH DISTRICT</option>
+      <option value="EAST DISTRICT">EAST DISTRICT</option>
+      <option value="CENTRAL DISTRICT">CENTRAL DISTRICT</option>
+      <option value="WEST DISTRICT">WEST DISTRICT</option>
+      <option value="KORANGI DISTRICT">KORANGI DISTRICT</option>
+      <option value="MALIR DISTRICT">MALIR DISTRICT</option>
+    </select>
+  </div>
+</div>
+
+
+
+
 
       <div className='mt-4 flex items-center justify-between px-4'>
         {/* Left side empty or you can put something here */}
@@ -511,9 +541,10 @@ export default function Stations() {
           <thead className='bg-gray-100 text-xs font-medium uppercase'>
             <tr>
               <th className='px-4 py-2'>Name</th>
-              <th className='px-4 py-2'>Location</th>
               <th className='px-4 py-2'>Incharge</th>
               <th className='px-4 py-2'>Contact</th>
+              <th className='px-4 py-2'>District</th>
+              <th className='px-4 py-2'>Location</th>
               <th className='px-4 py-2'>Jail Cap.</th>
               <th className='px-4 py-2'>FIRs</th>
               <th className='px-4 py-2'>CCTV</th>
@@ -524,26 +555,31 @@ export default function Stations() {
             </tr>
           </thead>
           <tbody>
-            {currentStations.map((station) => (
+            {currentStations
+  .filter((station) =>
+    districtFilter ? station.district === districtFilter : true
+  )
+  .map((station) => (
               <tr key={station._id} className='border-t hover:bg-gray-50'>
                 <td className='px-4 py-2'>{station.name}</td>
-                <td className='px-4 py-2'>{station.location}</td>
                 <td className='px-4 py-2'>{station.incharge}</td>
                 <td className='px-4 py-2'>{station.contact}</td>
+                <td className='px-4 py-2'>{station.district}</td>
+                <td className="px-4 py-2 min-w-[200px] whitespace-normal">{station.location}</td>
                 <td className='px-4 py-2'>{station.jailCapacity}</td>
                 <td className='px-4 py-2'>{station.firsRegistered}</td>
                 <td className='px-4 py-2'>{station.cctvCameras}</td>
-                <td className='px-4 py-2'>
+                <td className='px-4 py-2 min-w-[200px] whitespace-normal'>
                   {station.weapons && station.weapons.length > 0
                     ? station.weapons.join(', ')
                     : 'None'}
                 </td>
-                <td className='px-4 py-2'>
+                <td className='px-4 py-2 min-w-[200px] whitespace-normal'>
                   {station.vehicles && station.vehicles.length > 0
                     ? station.vehicles.join(', ')
                     : 'None'}
                 </td>
-                <td className='px-4 py-2'>
+                <td className='px-4 py-2 min-w-[200px] whitespace-normal'>
                   {station.image ? (
                     <img
                       src={`data:image/png;base64,${station.image}`}
@@ -720,7 +756,19 @@ export default function Stations() {
                 />
               </div>
 
-              <br></br>
+              <div>
+  <label className="mb-1 block font-medium">District</label>
+  <input
+    name="District"
+    placeholder="District"
+    value={editStation.district}
+    readOnly
+    className="w-full rounded border p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
+    required
+  />
+</div>
+
+
               <div className='mb-4'>
                 <label className='mb-2 block font-semibold'>Weapons</label>
                 <div className='flex flex-wrap gap-3'>

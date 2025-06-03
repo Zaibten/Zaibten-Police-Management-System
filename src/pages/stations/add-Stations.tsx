@@ -22,7 +22,8 @@ export default function AddStation() {
     cctvCameras: '0',
     firsRegistered: '0',
     latitude: '',
-  longitude: '',
+    longitude: '',
+    district:'',
   
   });
 
@@ -148,24 +149,27 @@ const reverseGeocode = (lat: number, lng: number, setInitial = false) => {
     });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+const handleInputChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const { name, value } = e.target;
 
-    if (
-      ['jailCapacity', 'cctvCameras', 'firsRegistered'].includes(name) &&
-      !/^\d*$/.test(value)
-    ) {
-      return;
-    }
+  if (
+    ['jailCapacity', 'cctvCameras', 'firsRegistered'].includes(name) &&
+    !/^\d*$/.test(value)
+  ) {
+    return;
+  }
 
-    setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
-      if (name === 'location') geocodeLocation(value);
-      return newData;
-    });
+  setFormData((prev) => {
+    const newData = { ...prev, [name]: value };
+    if (name === 'location') geocodeLocation(value);
+    return newData;
+  });
 
-    setErrors((prev) => ({ ...prev, [name]: '' }));
-  };
+  setErrors((prev) => ({ ...prev, [name]: '' }));
+};
+
 
   const handleCheckboxChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -183,20 +187,21 @@ const reverseGeocode = (lat: number, lng: number, setInitial = false) => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    const contactRegex = /^03\d{9}$/;
+    // const contactRegex = /^(03\d{9}|0\d{2}-\d{7})$/;
+
 
     if (!formData.name.trim()) newErrors.name = 'Station Name is required.';
     if (!formData.location.trim()) newErrors.location = 'Location is required.';
     if (!formData.incharge.trim()) newErrors.incharge = 'Officer Incharge is required.';
-    if (!contactRegex.test(formData.contact))
-      newErrors.contact = 'Contact number is invalid. (e.g. 03XXXXXXXXX)';
+    if (!formData.contact.trim()) newErrors.contact = 'Contact number is invalid. (e.g. 021-XXXXXXXXX)';
     if (formData.jailCapacity === '') newErrors.jailCapacity = 'Jail Capacity must be numeric.';
     if (formData.cctvCameras === '') newErrors.cctvCameras = 'CCTV Cameras must be numeric.';
     if (formData.firsRegistered === '') newErrors.firsRegistered = 'FIRs Registered must be numeric.';
     if (weapons.length === 0) newErrors.weapons = 'At least one weapon must be selected.';
     if (vehicles.length === 0) newErrors.vehicles = 'At least one vehicle must be selected.';
     if (!formData.latitude.trim()) newErrors.latitude = 'Latitude is required.';
-if (!formData.longitude.trim()) newErrors.longitude = 'Longitude is required.';
+    if (!formData.longitude.trim()) newErrors.longitude = 'Longitude is required.';
+    if (!formData.district.trim()) newErrors.district = 'District is required.';
  // Validate image required
   if (!imageFile) {
     newErrors.image = 'Station image is required.';
@@ -248,6 +253,7 @@ const handleSubmit = () => {
         firsRegistered: '0',
         latitude: '',
         longitude: '',
+        district:'',
       });
       setWeapons([]);
       setVehicles([]);
@@ -283,8 +289,10 @@ return (
           {[
             { label: 'Station Name', name: 'name', type: 'text', required: true, placeholder: 'Enter station name' },
             { label: 'Officer Incharge', name: 'incharge', type: 'text', required: true, placeholder: 'Enter officer incharge' },
-            { label: 'Contact Number', name: 'contact', type: 'text', placeholder: '03XXXXXXXXX', required: true },
+            // { label: 'Contact Number', name: 'contact', type: 'text', placeholder: '021-XXXXXXXXX', required: true,},
           ].map(({ label, name, type, placeholder, required }) => (
+            
+            
             <div key={name} className="flex flex-col">
               <label htmlFor={name} className="mb-1 font-semibold text-gray-700">
                 {label} {required && <span className="text-red-600">*</span>}
@@ -305,6 +313,75 @@ return (
               )}
             </div>
           ))}
+
+ <div className="flex flex-col">
+            <label htmlFor="contact" className="mb-1 font-semibold text-gray-700">
+              Contact Number <span className="text-red-600">*</span>
+            </label>
+            <input
+              id="contact"
+              name="contact"
+              type="text"
+              placeholder="Enter contact number"
+              value={formData.contact}
+              onChange={handleInputChange}
+              className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                errors.contact ? 'border-red-500' : 'border-gray-300'
+              }`}
+              // autoComplete="off"
+            />
+            {errors.contact && (
+              <p className="text-red-600 text-sm mt-1">{errors.contact}</p>
+            )}
+          </div>
+
+
+<div className="flex flex-col">
+  <label htmlFor="district" className="mb-1 font-medium text-gray-800">
+    District <span className="text-red-600">*</span>
+  </label>
+  <div className="relative">
+    <select
+      id="district"
+      name="district"
+      required
+      value={formData.district}
+      onChange={handleInputChange}
+      className={`appearance-none w-full border px-4 py-2 pr-10 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+        errors.district ? 'border-red-500' : 'border-gray-300'
+      }`}
+    >
+      <option value="" disabled>Select a district</option>
+      <option value="SOUTH DISTRICT">SOUTH DISTRICT</option>
+      <option value="EAST DISTRICT">EAST DISTRICT</option>
+      <option value="CENTRAL DISTRICT">CENTRAL DISTRICT</option>
+      <option value="WEST DISTRICT">WEST DISTRICT</option>
+      <option value="KORANGI DISTRICT">KORANGI DISTRICT</option>
+      <option value="MALIR DISTRICT">MALIR DISTRICT</option>
+    </select>
+
+    {/* Custom arrow icon */}
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+      <svg
+        className="h-4 w-4"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M10 12a1 1 0 01-.707-.293l-3-3a1 1 0 111.414-1.414L10 9.586l2.293-2.293a1 1 0 111.414 1.414l-3 3A1 1 0 0110 12z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </div>
+  </div>
+
+  {errors.district && (
+    <p className="text-sm text-red-600 mt-1">{errors.district}</p>
+  )}
+</div>
+
+
 
           {/* Location */}
           <div className="flex flex-col">

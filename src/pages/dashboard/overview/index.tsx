@@ -11,6 +11,26 @@ import {
 } from '@/components/ui/card'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  MyBarChart,
+  MyLineChart,
+  MyPieChart,
+  MyRadarChart,
+  MyAreaBumpChart,
+  MyHeatMapChart,
+  MyStreamChart,
+  MyFunnelChart,
+  MyScatterPlot,
+  MySankeyChart,
+  MyTreeMapChart,
+  MyWaffleChart,
+  MyChordChart,
+  MyCalendarHeatmap,
+  MyCirclePackingChart,
+} from './Charts' // Adjust path if needed
+
+
+
 
 export default function DashboardPage() {
   const mapRef = useRef<HTMLDivElement>(null)
@@ -250,10 +270,96 @@ policeLocations.forEach((officer, index) => {
         </div>
         <Tabs defaultValue='overview'>
           <TabsList>
-            <TabsTrigger value='overview'>Show Police Patrol</TabsTrigger>
-            <TabsTrigger value='analytics'>Show Police Station</TabsTrigger>
+            <TabsTrigger value='overview'>Show Duties Daily Update</TabsTrigger>
+            <TabsTrigger value='analytics'>Show Duties Monthly Update</TabsTrigger>
+            <TabsTrigger value='active'>Total Active Users</TabsTrigger>
           </TabsList>
-          <TabsContent value='overview'>This is the Overview</TabsContent>
+          <TabsContent value='overview'>
+
+<div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '20px',
+        justifyContent: 'center',
+      }}
+    >
+      {/* Bar Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyBarChart />
+      </div>
+
+      {/* Line Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyLineChart />
+      </div>
+
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyChordChart />
+      </div>
+
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyCalendarHeatmap />
+      </div>
+
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyCirclePackingChart />
+      </div>
+
+      {/* Pie Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyPieChart />
+      </div>
+
+      {/* Radar Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyRadarChart />
+      </div>
+
+      {/* Area Bump Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyAreaBumpChart />
+      </div>
+
+      {/* HeatMap Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyHeatMapChart />
+      </div>
+
+      {/* Stream Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyStreamChart />
+      </div>
+
+      {/* Funnel Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyFunnelChart />
+      </div>
+
+      {/* Scatter Plot */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyScatterPlot />
+      </div>
+
+      {/* Sankey Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MySankeyChart />
+      </div>
+
+      {/* Waffle Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '400px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyWaffleChart />
+      </div>
+
+      {/* TreeMap Chart */}
+      <div style={{ flex: '1 1 45%', minWidth: '800px', animation: 'fadeIn 1s ease-in-out' }}>
+        <MyTreeMapChart />
+      </div>
+
+      
+    </div>
+
+          </TabsContent>
           <TabsContent value='analytics'>This is Analytics</TabsContent>
         </Tabs>
 

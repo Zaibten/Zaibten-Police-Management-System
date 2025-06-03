@@ -124,6 +124,10 @@ const AddConstablePage: React.FC = () => {
       validationErrors.policeStation = 'Police Station is required'
     if (!formData.joiningDate)
       validationErrors.joiningDate = 'Joining Date is required'
+    
+    if (!formData.qualification.trim())
+      validationErrors.qualification = 'Qualification is required'
+
     if (!formData.status) validationErrors.status = 'Status is required'
     if (formData.weapons.length === 0)
       validationErrors.weapons = 'At least one weapon must be assigned'
@@ -509,6 +513,9 @@ if (!formData.imageFile) {
                 onChange={handleInputChange}
                 className='w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600'
               />
+              {errors.qualification && (
+                <p className='mt-1 text-sm text-red-600'>{errors.qualification}</p>
+              )}
             </div>
 
             {/* Weapons Assigned */}
