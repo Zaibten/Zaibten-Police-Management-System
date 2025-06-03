@@ -232,7 +232,7 @@ const handleSubmit = () => {
     formPayload.append('image', imageFile);
   }
 
-  axios.post('http://localhost:5000/api/police-station', formPayload, {
+  axios.post('https://zaibtenpoliceserver.vercel.app/api/police-station', formPayload, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

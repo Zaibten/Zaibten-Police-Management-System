@@ -33,7 +33,7 @@ const ViewPoliceUser = () => {
       try {
         setLoading(true)
         const response = await axios.get(
-          'http://localhost:5000/api/police-users'
+          'https://zaibtenpoliceserver.vercel.app/api/police-users'
         )
         setUsers(response.data)
       } catch (error) {
@@ -89,7 +89,7 @@ const ViewPoliceUser = () => {
       setConfirmModalVisible(false) // Hide confirmation modal first
 
       await axios.patch(
-        `http://localhost:5000/api/police-users/${targetUser._id}/status`,
+        `https://zaibtenpoliceserver.vercel.app/api/police-users/${targetUser._id}/status`,
         {
           status: targetNewStatus,
         }
@@ -131,7 +131,7 @@ const ViewPoliceUser = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/police-users/${deleteConstableId}`,
+        `https://zaibtenpoliceserver.vercel.app/api/police-users/${deleteConstableId}`,
         {
           method: 'DELETE',
         }

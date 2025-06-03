@@ -81,7 +81,7 @@ export const MyChordChart = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/weaponsUsageChord'
+          'https://zaibtenpoliceserver.vercel.app/charts/weaponsUsageChord'
         )
         const json = await res.json()
         setData(json)
@@ -132,7 +132,7 @@ export const MyCalendarHeatmap = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/dutiesCalendarHeatmap'
+          'https://zaibtenpoliceserver.vercel.app/charts/dutiesCalendarHeatmap'
         )
         const json = await res.json()
 
@@ -179,7 +179,7 @@ export const MyCirclePackingChart = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/constablesCirclePacking'
+          'https://zaibtenpoliceserver.vercel.app/charts/constablesCirclePacking'
         )
         const json = await res.json()
         setChartData(json)
@@ -216,7 +216,7 @@ export const MyBarChart = () => {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/policeStationsPerDistrict'
+          'https://zaibtenpoliceserver.vercel.app/charts/policeStationsPerDistrict'
         )
         const json = await res.json()
         setBarData(json)
@@ -270,7 +270,7 @@ export const MyLineChart = () => {
     const fetchLineData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/dutiesCountPerMonth'
+          'https://zaibtenpoliceserver.vercel.app/charts/dutiesCountPerMonth'
         )
         const data = await res.json()
         setLineData(data)
@@ -321,7 +321,7 @@ export const MyPieChart = () => {
     const fetchPieData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/constablesByGender'
+          'https://zaibtenpoliceserver.vercel.app/charts/constablesByGender'
         )
         const data = await res.json()
         setPieData(data)
@@ -361,7 +361,7 @@ export const MyRadarChart = () => {
     const fetchRadarData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/constablesByRankAndStatus'
+          'https://zaibtenpoliceserver.vercel.app/charts/constablesByRankAndStatus'
         )
         const data = await res.json()
         setRadarData(data)
@@ -404,7 +404,7 @@ export const MyAreaBumpChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://localhost:5000/charts/dutiesAreaBump')
+        const res = await fetch('https://zaibtenpoliceserver.vercel.app/charts/dutiesAreaBump')
         if (!res.ok) throw new Error('Network response was not ok')
         const data: AreaBumpSerie<MyDatum, {}>[] = await res.json()
         setBumpData(data)
@@ -435,7 +435,7 @@ export const MyHeatMapChart = () => {
   useEffect(() => {
     async function fetchHeatMapData() {
       try {
-        const res = await fetch('http://localhost:5000/charts/dutiesHeatmap')
+        const res = await fetch('https://zaibtenpoliceserver.vercel.app/charts/dutiesHeatmap')
         if (!res.ok) throw new Error('Network error')
         const data: MyHeatMapSerie[] = await res.json()
         setHeatMapData(data)
@@ -483,7 +483,7 @@ export const MyStreamChart = () => {
     async function fetchData() {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/constablesJoiningStream'
+          'https://zaibtenpoliceserver.vercel.app/charts/constablesJoiningStream'
         )
         const apiData: ApiResponseItem[] = await res.json()
 
@@ -534,7 +534,7 @@ export const MyFunnelChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('http://localhost:5000/charts/constablesFunnel')
+        const res = await fetch('https://zaibtenpoliceserver.vercel.app/charts/constablesFunnel')
         const json = await res.json()
         setData(json)
       } catch (err) {
@@ -571,7 +571,7 @@ export const MyScatterPlot = () => {
     const fetchScatterData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/constablesJoiningStream'
+          'https://zaibtenpoliceserver.vercel.app/charts/constablesJoiningStream'
         )
         const json = await res.json()
         setScatterData(json)
@@ -619,7 +619,7 @@ export const MySankeyChart = () => {
     const fetchSankeyData = async () => {
       try {
         const res = await fetch(
-          'http://localhost:5000/charts/constableDutyFlow'
+          'https://zaibtenpoliceserver.vercel.app/charts/constableDutyFlow'
         )
         const json = await res.json()
         setSankeyData(json)
@@ -659,7 +659,7 @@ export const MyTreeMapChart = () => {
   useEffect(() => {
     const fetchTreeMapData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/treemap-data')
+        const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/treemap-data')
         const data = await response.json()
         setTreeData(data)
       } catch (error) {
@@ -698,7 +698,7 @@ export const MyWaffleChart = () => {
   useEffect(() => {
     const fetchWaffleData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/waffle-data')
+        const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/waffle-data')
         const data: WaffleDatum[] = await response.json()
         setWaffleData(data)
       } catch (error) {

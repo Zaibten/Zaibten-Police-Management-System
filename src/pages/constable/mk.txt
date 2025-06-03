@@ -15,7 +15,7 @@ export default function ConstablePage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:5000/api/constablesdata');
+        const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/constablesdata');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
