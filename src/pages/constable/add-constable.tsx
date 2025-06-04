@@ -42,9 +42,6 @@ const AddConstablePage: React.FC = () => {
   const [policeStationsList, setPoliceStationsList] = useState<string[]>([])
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  
-
-
   useEffect(() => {
     const fetchStations = async () => {
       try {
@@ -124,7 +121,7 @@ const AddConstablePage: React.FC = () => {
       validationErrors.policeStation = 'Police Station is required'
     if (!formData.joiningDate)
       validationErrors.joiningDate = 'Joining Date is required'
-    
+
     if (!formData.qualification.trim())
       validationErrors.qualification = 'Qualification is required'
 
@@ -133,10 +130,9 @@ const AddConstablePage: React.FC = () => {
       validationErrors.weapons = 'At least one weapon must be assigned'
     if (formData.vehicles.length === 0)
       validationErrors.vehicles = 'At least one vehicle must be assigned'
-if (!formData.imageFile) {
-  validationErrors.imageFile = 'Station image is required.'
-}
-
+    if (!formData.imageFile) {
+      validationErrors.imageFile = 'Station image is required.'
+    }
 
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) return
@@ -177,13 +173,13 @@ if (!formData.imageFile) {
         console.error('Server validation errors:', errorData)
         setErrors((prev) => ({
           ...prev,
-          server: errorData.message || 'Failed to add constable',
+          server: errorData.message || 'Failed to add policeman',
         }))
         return
       }
 
       const result = await response.json()
-      console.log('Constable added successfully:', result)
+      console.log('Policeman added successfully:', result)
       setModalVisible(true)
       setFormData({
         fullName: '',
@@ -212,7 +208,7 @@ if (!formData.imageFile) {
   return (
     <div className='h-screen overflow-y-auto bg-gray-50 p-6'>
       <h2 className='mb-8 text-center text-3xl font-bold text-blue-700'>
-        Add Constable
+        ADD POLICEMAN
       </h2>
 
       <div className='space-y-6'>
@@ -514,7 +510,9 @@ if (!formData.imageFile) {
                 className='w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600'
               />
               {errors.qualification && (
-                <p className='mt-1 text-sm text-red-600'>{errors.qualification}</p>
+                <p className='mt-1 text-sm text-red-600'>
+                  {errors.qualification}
+                </p>
               )}
             </div>
 
@@ -583,47 +581,49 @@ if (!formData.imageFile) {
               ></textarea>
             </div>
 
-           {/* Image Upload */}
-<div className="flex flex-col">
-  <label htmlFor="image" className="mb-1 font-semibold text-gray-700">
-    Upload Image <span className="text-red-600">*</span>
-  </label>
-  <input
-    id="image"
-    type="file"
-    accept="image/*"
-    required
-    onChange={(e) => {
-      const file = e.target.files && e.target.files[0]
-      if (file) {
-        setFormData((prev) => ({
-          ...prev,
-          imageFile: file,
-        }))
-        setImagePreview(URL.createObjectURL(file))
-        setErrors((prev) => ({ ...prev, imageFile: '' })) // Clear error on valid input
-      } else {
-        setFormData((prev) => ({ ...prev, imageFile: null }))
-        setImagePreview(null)
-      }
-    }}
-    className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-      errors.imageFile ? 'border-red-500' : 'border-gray-300'
-    }`}
-  />
-  {errors.imageFile && (
-    <p className="mt-1 text-sm text-red-600">{errors.imageFile}</p>
-  )}
-  {/* Preview */}
-  {imagePreview && (
-    <img
-      src={imagePreview}
-      alt="Preview"
-      className="mt-3 max-h-48 rounded border border-gray-300 object-contain"
-    />
-  )}
-</div>
-
+            {/* Image Upload */}
+            <div className='flex flex-col'>
+              <label
+                htmlFor='image'
+                className='mb-1 font-semibold text-gray-700'
+              >
+                Upload Image <span className='text-red-600'>*</span>
+              </label>
+              <input
+                id='image'
+                type='file'
+                accept='image/*'
+                required
+                onChange={(e) => {
+                  const file = e.target.files && e.target.files[0]
+                  if (file) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      imageFile: file,
+                    }))
+                    setImagePreview(URL.createObjectURL(file))
+                    setErrors((prev) => ({ ...prev, imageFile: '' })) // Clear error on valid input
+                  } else {
+                    setFormData((prev) => ({ ...prev, imageFile: null }))
+                    setImagePreview(null)
+                  }
+                }}
+                className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  errors.imageFile ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.imageFile && (
+                <p className='mt-1 text-sm text-red-600'>{errors.imageFile}</p>
+              )}
+              {/* Preview */}
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt='Preview'
+                  className='mt-3 max-h-48 rounded border border-gray-300 object-contain'
+                />
+              )}
+            </div>
           </div>
         </div>
 
@@ -663,7 +663,7 @@ if (!formData.imageFile) {
             onClick={handleSubmit}
             className='rounded bg-blue-700 px-8 py-3 font-semibold text-white shadow hover:bg-blue-800'
           >
-            Add Constable
+            Add Policeman
           </button>
         </div>
       </div>
@@ -735,7 +735,7 @@ if (!formData.imageFile) {
                 opacity: 0,
               }}
             >
-              Constable Added Successfully!
+              Policeman Added Successfully!
             </h2>
 
             {/* Close Button */}

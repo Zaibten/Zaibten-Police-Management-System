@@ -70,7 +70,6 @@ const LoaderSpinner = () => (
   </div>
 )
 
-
 export const MyChordChart = () => {
   const [data, setData] = useState<{
     keys: string[]
@@ -108,7 +107,7 @@ export const MyChordChart = () => {
         animate={true}
         motionConfig='gentle'
       />
-       {/* <h3
+      {/* <h3
         style={{
           textAlign: 'center',
           fontFamily: 'Inter, sans-serif',
@@ -588,7 +587,7 @@ export const MyScatterPlot = () => {
   }
 
   return (
-    <div style={{ height: 300, width:500 }}>
+    <div style={{ height: 300, width: 500 }}>
       <ResponsiveScatterPlot
         data={scatterData}
         margin={{ top: 60, right: 140, bottom: 70, left: 90 }}

@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 
 const profileFormSchema = z.object({
   username: z
@@ -50,12 +51,16 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
+// Fetch userEmail from localStorage
+const storedEmail = localStorage.getItem('userEmail') ?? 'm@example.com'
+
 const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
+  username: 'Admin',
+  email: storedEmail,
+  bio: "Passionate about building user-friendly apps and delivering quality code. Always eager to learn and innovate.",
   urls: [
-    { value: 'https://github.com/nguyenvantanphatit' },
-    { value: 'https://github.com/nguyenvantanphatit/React-Shadcn-Admin-Dashboard' },
+    { value: 'https://github.com/MuzamilOfficial' },
+    { value: 'https://zaibteninfo.com/' },
   ],
 }
 
@@ -66,7 +71,15 @@ export default function ProfileForm() {
     mode: 'onChange',
   })
 
-  const { fields, append } = useFieldArray({
+  // If localStorage email changes during component lifetime, update the form email value
+  useEffect(() => {
+    const email = localStorage.getItem('userEmail')
+    if (email) {
+      form.setValue('email', email)
+    }
+  }, [form])
+
+  const { fields} = useFieldArray({
     name: 'urls',
     control: form.control,
   })
@@ -85,6 +98,7 @@ export default function ProfileForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        {/* Username - readonly */}
         <FormField
           control={form.control}
           name='username'
@@ -92,42 +106,50 @@ export default function ProfileForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder='shadcn' {...field} />
+                <Input {...field} readOnly />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                This is your default display name provided by the system. It may be your official ID or a system-generated username.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Email - select, default from localStorage */}
         <FormField
           control={form.control}
           name='email'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder='Select a verified email to display' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='m@example.com'>m@example.com</SelectItem>
+                  {/* <SelectItem value='m@example.com'>m@example.com</SelectItem>
                   <SelectItem value='m@google.com'>m@google.com</SelectItem>
-                  <SelectItem value='m@support.com'>m@support.com</SelectItem>
+                  <SelectItem value='m@support.com'>m@support.com</SelectItem> */}
+                  {/* Also allow the stored email if not in the list */}
+                  {storedEmail &&
+                    !['m@example.com', 'm@google.com', 'm@support.com'].includes(storedEmail) && (
+                      <SelectItem value={storedEmail}>{storedEmail}</SelectItem>
+                    )}
                 </SelectContent>
               </Select>
               <FormDescription>
                 You can manage verified email addresses in your{' '}
-                <Link to='/examples/forms'>email settings</Link>.
+                <Link to='/examples/forms'>server settings</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Bio */}
         <FormField
           control={form.control}
           name='bio'
@@ -138,17 +160,18 @@ export default function ProfileForm() {
                 <Textarea
                   placeholder='Tell us a little bit about yourself'
                   className='resize-none'
-                  {...field}
+                  {...field} readOnly
                 />
               </FormControl>
               <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
+                Share a bit about your background, passions, or what you do.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* URLs */}
         <div>
           {fields.map((field, index) => (
             <FormField
@@ -161,17 +184,17 @@ export default function ProfileForm() {
                     URLs
                   </FormLabel>
                   <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
+                    Our links to website, blog, or social media profiles.
                   </FormDescription>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field}  readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           ))}
-          <Button
+          {/* <Button
             type='button'
             variant='outline'
             size='sm'
@@ -179,8 +202,9 @@ export default function ProfileForm() {
             onClick={() => append({ value: '' })}
           >
             Add URL
-          </Button>
+          </Button> */}
         </div>
+
         <Button type='submit'>Update profile</Button>
       </form>
     </Form>

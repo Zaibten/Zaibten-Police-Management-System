@@ -7,7 +7,6 @@ const AddPoliceUser = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
-
   // Modal state
   const [modalVisible, setModalVisible] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
@@ -20,16 +19,16 @@ const AddPoliceUser = () => {
     if (password.length !== 8) {
       setMessage('❌ Password must be exactly 8 characters.')
       setIsErrorMessage(true)
-    //   setModalMessage('Password must be exactly 8 characters.')
-    //   setModalVisible(true)
+      //   setModalMessage('Password must be exactly 8 characters.')
+      //   setModalVisible(true)
       return
     }
 
     if (batchNo.length > 20) {
       setMessage('❌ Batch No must be 20 characters or less.')
       setIsErrorMessage(true)
-    //   setModalMessage('Batch No must be 20 characters or less.')
-    //   setModalVisible(true)
+      //   setModalMessage('Batch No must be 20 characters or less.')
+      //   setModalVisible(true)
       return
     }
 
@@ -60,8 +59,8 @@ const AddPoliceUser = () => {
     } catch (error) {
       setMessage('❌ Network error')
       setIsErrorMessage(true)
-    //   setModalMessage('Network error')
-    //   setModalVisible(true)
+      //   setModalMessage('Network error')
+      //   setModalVisible(true)
     }
     setIsLoading(false)
   }
@@ -95,69 +94,73 @@ const AddPoliceUser = () => {
             />
           </div>
 
-<div className="relative">
-  <input
-    id="password"
-    name="password"
-    type={showPassword ? "text" : "password"}
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-    placeholder="Enter Password (8 characters)"
-    maxLength={8}
-    className="mt-2 block w-full rounded-md border border-gray-300 px-5 py-4 pr-14 text-lg placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-    autoComplete="new-password"
-  />
-  <button
-    type="button"
-    onClick={() => setShowPassword(!showPassword)}
-    className="absolute top-1/2 right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-    tabIndex={-1}
-    aria-label={showPassword ? "Hide password" : "Show password"}
-  >
-    {showPassword ? (
-      // Improved Eye Open Icon
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12s-4.5 7.5-10.5 7.5S1.5 12 1.5 12z"
-        />
-        <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ) : (
-      // Improved Eye Closed Icon
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M17.94 17.94A9.969 9.969 0 0112 19.5c-5.523 0-10-7.5-10-7.5a19.212 19.212 0 015.243-5.774M3 3l18 18"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M9.88 9.88a3 3 0 014.24 4.24"
-        />
-      </svg>
-    )}
-  </button>
-</div>
-
-
+          <div className='relative'>
+            <input
+              id='password'
+              name='password'
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder='Enter Password (8 characters)'
+              maxLength={8}
+              className='mt-2 block w-full rounded-md border border-gray-300 px-5 py-4 pr-14 text-lg placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500'
+              autoComplete='new-password'
+            />
+            <button
+              type='button'
+              onClick={() => setShowPassword(!showPassword)}
+              className='absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none'
+              tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? (
+                // Improved Eye Open Icon
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-6 w-6'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M1.5 12s4.5-7.5 10.5-7.5S22.5 12 22.5 12s-4.5 7.5-10.5 7.5S1.5 12 1.5 12z'
+                  />
+                  <circle
+                    cx='12'
+                    cy='12'
+                    r='3'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              ) : (
+                // Improved Eye Closed Icon
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-6 w-6'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M17.94 17.94A9.969 9.969 0 0112 19.5c-5.523 0-10-7.5-10-7.5a19.212 19.212 0 015.243-5.774M3 3l18 18'
+                  />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M9.88 9.88a3 3 0 014.24 4.24'
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
 
           <button
             type='submit'

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import ThemeSwitch from '@/components/theme-switch'
+import { UserNav } from '@/components/user-nav'
 import { Layout } from '@/components/custom/layout'
 import {
   Card,
@@ -27,7 +29,8 @@ import {
   MyChordChart,
   MyCalendarHeatmap,
   MyCirclePackingChart,
-} from './Charts' // Adjust path if needed
+} from './Charts' // Adjust path if needed 
+
 
 export default function DashboardPage() {
   const mapRef = useRef<HTMLDivElement>(null)
@@ -44,6 +47,7 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const [policeLocations, setPoliceLocations] = useState<any[]>([])
+  
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -258,55 +262,73 @@ export default function DashboardPage() {
 
   return (
     <Layout>
-      <Layout.Body>
-<div
-  style={{
-    width: '100%',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    backgroundColor: '#f0f8ff',
-    borderRadius: '5px',
-    padding: '5px 10px',
-    marginBottom: '10px',
-  }}
->
-  <div
-    style={{
-      display: 'inline-block',
-      animation: 'scroll-left 15s linear infinite',
-      fontWeight: 600,
-      fontSize: '14px',
-      color: '#0b5394',
-    }}
-  >
-    Police Management System: Ensuring law and order, serving with honor, and protecting the community.
-  </div>
+      <Layout.Header>
+        <div className='ml-auto flex items-center space-x-4'>
+          <ThemeSwitch />
+          <UserNav />
+        </div>
+      </Layout.Header>
 
-  <style>
-    {`
+      <Layout.Body>
+        <div
+          style={{
+            width: '100%',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            backgroundColor: '#f0f8ff',
+            borderRadius: '5px',
+            padding: '5px 10px',
+            marginBottom: '10px',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              display: 'inline-block',
+              animation: 'scroll-left 30s linear infinite',
+              fontWeight: 600,
+              fontSize: '14px',
+              color: '#0b5394',
+              minWidth: '200%', // ensures longer scrolling area
+            }}
+          >
+            Police Management System: Ensuring law and order, serving with
+            honor, and protecting the community. Dedicated officers, seamless
+            coordination, smart duty allocations, digital policing, public
+            safety alerts, and rapid response teams ready to serve. Police
+            Management System: Ensuring law and order, serving with honor, and
+            protecting the community. Dedicated officers, seamless coordination,
+            smart duty allocations, digital policing, public safety alerts, and
+            rapid response teams ready to serve.
+          </div>
+
+          <style>
+            {`
       @keyframes scroll-left {
         0% {
-          transform: translateX(100%);
+          transform: translateX(0%);
         }
         100% {
-          transform: translateX(-100%);
+          transform: translateX(-50%);
         }
       }
     `}
-  </style>
-</div>
+          </style>
+        </div>
 
         <div className='mb-4 flex items-center justify-between'>
-  <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
-  <div className='flex items-center gap-3'>
-    <span className='text-sm font-semibold text-muted-foreground'>Welcome Admin</span>
-    <img
-      src='logo.png' // 🔄 Replace with your actual icon path
-      alt='Admin Icon'
-      className='h-10 w-10 rounded-full border border-gray-300 shadow'
-    />
-  </div>
-</div>
+          <h1 className='text-2xl font-bold tracking-tight'>DASHBOARD</h1>
+          {/* <div className='flex items-center gap-3'>
+            <span className='text-sm font-semibold text-muted-foreground'>
+              Welcome Admin
+            </span>
+            <img
+              src='logo.png' // 🔄 Replace with your actual icon path
+              alt='Admin Icon'
+              className='h-10 w-10 rounded-full border border-gray-300 shadow'
+            />
+          </div> */}
+        </div>
 
         <Tabs defaultValue='overview'>
           <TabsList>

@@ -365,7 +365,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-[100vh] overflow-y-auto bg-white p-6 dark:bg-gray-900">
+    <div className='h-[100vh] overflow-y-auto bg-white p-6 dark:bg-gray-900'>
       <h2 className='mb-8 text-center text-3xl font-bold text-blue-700'>
         POLICEMAN DUTY DETAILS
       </h2>
@@ -588,7 +588,9 @@ export default function Home() {
           >
             <thead className='sticky top-0 z-10 bg-gray-200 text-xs uppercase text-gray-700 dark:bg-gray-800 dark:text-gray-300'>
               <tr>
-                        <th className='border border-gray-300 px-4 py-3 text-left font-semibold dark:border-gray-700'>S.No</th>
+                <th className='border border-gray-300 px-4 py-3 text-left font-semibold dark:border-gray-700'>
+                  S.No
+                </th>
 
                 {[
                   'Badge No',
@@ -629,8 +631,10 @@ export default function Home() {
                       : 'bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700'
                   }
                 >
-                            <td className='border px-4 py-2 dark:border-gray-700'>{idx + 1}</td> {/* S.No */}
-
+                  <td className='border px-4 py-2 dark:border-gray-700'>
+                    {idx + 1}
+                  </td>{' '}
+                  {/* S.No */}
                   <td className='border px-4 py-2 dark:border-gray-700'>
                     {duty.badgeNumber}
                   </td>
@@ -683,7 +687,6 @@ export default function Home() {
                   <td className='border px-4 py-2 dark:border-gray-700'>
                     {duty.remarks ? duty.remarks : 'No remarks till now'}
                   </td>
-
                   <td
                     className='border px-4 py-4 text-center dark:border-gray-700'
                     style={{ minWidth: '130px' }}
@@ -717,7 +720,6 @@ export default function Home() {
                       )
                     })()}
                   </td>
-
                   <td className='flex flex-wrap items-center gap-2 px-4 py-2'>
                     <button
                       onClick={() => handleEdit(duty)}

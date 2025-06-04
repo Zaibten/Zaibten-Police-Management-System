@@ -17,8 +17,7 @@ export default function Stations() {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false)
   const [showSuccessModal, setShowSuccessModal] = React.useState(false)
   const [itemsPerPage, setItemsPerPage] = React.useState(20)
-  const [districtFilter, setDistrictFilter] = useState('');
-
+  const [districtFilter, setDistrictFilter] = useState('')
 
   const weaponsList = [
     'Pistols',
@@ -354,7 +353,7 @@ export default function Stations() {
       }}
     >
       <h2 className='mb-8 text-center text-3xl font-bold text-blue-700'>
-        Police Stations
+        POLICE STATION
       </h2>
       {/* Reset button */}
       <style>
@@ -449,45 +448,41 @@ export default function Stations() {
       )}
 
       <br />
-<div className='mb-4 flex flex-wrap items-center justify-center gap-4'>
-  {/* Search Input */}
-  <input
-    type='text'
-    placeholder='Search by police station name'
-    value={searchTerm}
-    onChange={(e) => {
-      setSearchTerm(e.target.value);
-      setCurrentPage(1); // reset to first page on new search
-    }}
-    className='w-96 rounded border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-  />
+      <div className='mb-4 flex flex-wrap items-center justify-center gap-4'>
+        {/* Search Input */}
+        <input
+          type='text'
+          placeholder='Search by police station name'
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value)
+            setCurrentPage(1) // reset to first page on new search
+          }}
+          className='w-96 rounded border border-gray-300 px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+        />
 
-  {/* District Filter */}
-  <div className="flex items-center gap-2">
-    <label htmlFor="districtFilter" className="font-medium text-gray-700">
-      Filter by District:
-    </label>
-    <select
-      id="districtFilter"
-      name="districtFilter"
-      value={districtFilter}
-      onChange={(e) => setDistrictFilter(e.target.value)}
-      className="rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-    >
-      <option value="">All Districts</option>
-      <option value="SOUTH DISTRICT">SOUTH DISTRICT</option>
-      <option value="EAST DISTRICT">EAST DISTRICT</option>
-      <option value="CENTRAL DISTRICT">CENTRAL DISTRICT</option>
-      <option value="WEST DISTRICT">WEST DISTRICT</option>
-      <option value="KORANGI DISTRICT">KORANGI DISTRICT</option>
-      <option value="MALIR DISTRICT">MALIR DISTRICT</option>
-    </select>
-  </div>
-</div>
-
-
-
-
+        {/* District Filter */}
+        <div className='flex items-center gap-2'>
+          <label htmlFor='districtFilter' className='font-medium text-gray-700'>
+            Filter by District:
+          </label>
+          <select
+            id='districtFilter'
+            name='districtFilter'
+            value={districtFilter}
+            onChange={(e) => setDistrictFilter(e.target.value)}
+            className='rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none'
+          >
+            <option value=''>All Districts</option>
+            <option value='SOUTH DISTRICT'>SOUTH DISTRICT</option>
+            <option value='EAST DISTRICT'>EAST DISTRICT</option>
+            <option value='CENTRAL DISTRICT'>CENTRAL DISTRICT</option>
+            <option value='WEST DISTRICT'>WEST DISTRICT</option>
+            <option value='KORANGI DISTRICT'>KORANGI DISTRICT</option>
+            <option value='MALIR DISTRICT'>MALIR DISTRICT</option>
+          </select>
+        </div>
+      </div>
 
       <div className='mt-4 flex items-center justify-between px-4'>
         {/* Left side empty or you can put something here */}
@@ -556,57 +551,59 @@ export default function Stations() {
           </thead>
           <tbody>
             {currentStations
-  .filter((station) =>
-    districtFilter ? station.district === districtFilter : true
-  )
-  .map((station) => (
-              <tr key={station._id} className='border-t hover:bg-gray-50'>
-                <td className='px-4 py-2'>{station.name}</td>
-                <td className='px-4 py-2'>{station.incharge}</td>
-                <td className='px-4 py-2'>{station.contact}</td>
-                <td className='px-4 py-2'>{station.district}</td>
-                <td className="px-4 py-2 min-w-[200px] whitespace-normal">{station.location}</td>
-                <td className='px-4 py-2'>{station.jailCapacity}</td>
-                <td className='px-4 py-2'>{station.firsRegistered}</td>
-                <td className='px-4 py-2'>{station.cctvCameras}</td>
-                <td className='px-4 py-2 min-w-[200px] whitespace-normal'>
-                  {station.weapons && station.weapons.length > 0
-                    ? station.weapons.join(', ')
-                    : 'None'}
-                </td>
-                <td className='px-4 py-2 min-w-[200px] whitespace-normal'>
-                  {station.vehicles && station.vehicles.length > 0
-                    ? station.vehicles.join(', ')
-                    : 'None'}
-                </td>
-                <td className='px-4 py-2 min-w-[200px] whitespace-normal'>
-                  {station.image ? (
-                    <img
-                      src={`data:image/png;base64,${station.image}`}
-                      alt={`${station.name} station`}
-                      className='h-16 w-16 rounded object-cover'
-                    />
-                  ) : (
-                    // <span className="text-gray-400 text-xs">No Station Image</span>
-                    <span className='text-xs text-gray-400'>-</span>
-                  )}
-                </td>
-                <td className='flex flex-wrap items-center gap-2 px-4 py-2'>
-                  <button
-                    onClick={() => handleEdit(station)}
-                    className='rounded bg-blue-500 px-3 py-1 text-xs text-white hover:bg-blue-600'
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(station._id)}
-                    className='rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600'
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+              .filter((station) =>
+                districtFilter ? station.district === districtFilter : true
+              )
+              .map((station) => (
+                <tr key={station._id} className='border-t hover:bg-gray-50'>
+                  <td className='px-4 py-2'>{station.name}</td>
+                  <td className='px-4 py-2'>{station.incharge}</td>
+                  <td className='px-4 py-2'>{station.contact}</td>
+                  <td className='px-4 py-2'>{station.district}</td>
+                  <td className='min-w-[200px] whitespace-normal px-4 py-2'>
+                    {station.location}
+                  </td>
+                  <td className='px-4 py-2'>{station.jailCapacity}</td>
+                  <td className='px-4 py-2'>{station.firsRegistered}</td>
+                  <td className='px-4 py-2'>{station.cctvCameras}</td>
+                  <td className='min-w-[200px] whitespace-normal px-4 py-2'>
+                    {station.weapons && station.weapons.length > 0
+                      ? station.weapons.join(', ')
+                      : 'None'}
+                  </td>
+                  <td className='min-w-[200px] whitespace-normal px-4 py-2'>
+                    {station.vehicles && station.vehicles.length > 0
+                      ? station.vehicles.join(', ')
+                      : 'None'}
+                  </td>
+                  <td className='min-w-[200px] whitespace-normal px-4 py-2'>
+                    {station.image ? (
+                      <img
+                        src={`data:image/png;base64,${station.image}`}
+                        alt={`${station.name} station`}
+                        className='h-16 w-16 rounded object-cover'
+                      />
+                    ) : (
+                      // <span className="text-gray-400 text-xs">No Station Image</span>
+                      <span className='text-xs text-gray-400'>-</span>
+                    )}
+                  </td>
+                  <td className='flex flex-wrap items-center gap-2 px-4 py-2'>
+                    <button
+                      onClick={() => handleEdit(station)}
+                      className='rounded bg-blue-500 px-3 py-1 text-xs text-white hover:bg-blue-600'
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(station._id)}
+                      className='rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600'
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
             {currentStations.length === 0 && (
               <tr>
                 <td colSpan={11} className='p-4 text-center text-gray-500'>
@@ -625,18 +622,19 @@ export default function Stations() {
       {editStation && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
           <div className='max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6 shadow-lg'>
-<h3 className='mb-6 text-center text-2xl font-bold text-blue-700'>
+            <h3 className='mb-6 text-center text-2xl font-bold text-blue-700'>
               Edit Station
-            </h3> {/* Image block */}
-      {editStation.image && (
-        <div className='mb-6 flex justify-center'>
-          <img
-            src={`data:image/png;base64,${editStation.image}`}
-            alt="Station"
-            className='h-40 w-40 rounded-full object-cover border-4 border-gray-300 shadow-md'
-          />
-        </div>
-      )}
+            </h3>{' '}
+            {/* Image block */}
+            {editStation.image && (
+              <div className='mb-6 flex justify-center'>
+                <img
+                  src={`data:image/png;base64,${editStation.image}`}
+                  alt='Station'
+                  className='h-40 w-40 rounded-full border-4 border-gray-300 object-cover shadow-md'
+                />
+              </div>
+            )}
             <div className='mb-4 grid grid-cols-2 gap-4'>
               <div>
                 <label className='mb-1 block font-medium'>Station Name</label>
@@ -757,17 +755,16 @@ export default function Stations() {
               </div>
 
               <div>
-  <label className="mb-1 block font-medium">District</label>
-  <input
-    name="District"
-    placeholder="District"
-    value={editStation.district}
-    readOnly
-    className="w-full rounded border p-2 bg-gray-100 text-gray-700 cursor-not-allowed"
-    required
-  />
-</div>
-
+                <label className='mb-1 block font-medium'>District</label>
+                <input
+                  name='District'
+                  placeholder='District'
+                  value={editStation.district}
+                  readOnly
+                  className='w-full cursor-not-allowed rounded border bg-gray-100 p-2 text-gray-700'
+                  required
+                />
+              </div>
 
               <div className='mb-4'>
                 <label className='mb-2 block font-semibold'>Weapons</label>
@@ -848,7 +845,6 @@ export default function Stations() {
                 </div>
               </div>
             </div>
-
             <div>
               <label className='mb-2 block font-semibold'>
                 Google Map (Live)
@@ -877,7 +873,6 @@ export default function Stations() {
                 Please change location manually.
               </small>
             </div>
-
             <div className='mt-4 flex justify-end gap-3'>
               <button
                 onClick={() => setEditStation(null)}

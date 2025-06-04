@@ -336,7 +336,7 @@ const ViewPoliceUser = () => {
           </table>
         </div>
       )}
-      
+
       {showDeleteModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70'>
           <div
@@ -388,8 +388,8 @@ const ViewPoliceUser = () => {
                 opacity: 0,
               }}
             >
-              Are you sure you want to delete this user credentials? This action cannot
-              be undone.
+              Are you sure you want to delete this user credentials? This action
+              cannot be undone.
             </p>
 
             <div className='flex justify-center gap-4'>

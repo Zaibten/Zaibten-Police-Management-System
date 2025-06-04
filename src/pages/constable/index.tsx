@@ -55,7 +55,7 @@ export default function ConstablePage() {
         const data = await response.json()
         setConstables(data)
       } catch (err: any) {
-        setError(err.message || 'Failed to fetch constables')
+        setError(err.message || 'Failed to fetch policeman')
       } finally {
         setLoading(false)
       }
@@ -158,7 +158,7 @@ export default function ConstablePage() {
       }}
     >
       <h2 className='mb-8 text-center text-3xl font-bold text-blue-700'>
-        Constables
+        POLICEMAN
       </h2>
 
       <div className='mb-4 flex justify-center'>
@@ -223,7 +223,7 @@ export default function ConstablePage() {
       <br />
 
       {loading ? (
-        <p className='text-center text-gray-600'>Loading constables...</p>
+        <p className='text-center text-gray-600'>Loading policeman...</p>
       ) : error ? (
         <p className='text-center text-red-600'>Error: {error}</p>
       ) : (
@@ -306,13 +306,13 @@ export default function ConstablePage() {
                   </td>
                 </tr>
               ))}
-               {currentConstables.length === 0 && (
-              <tr>
-                <td colSpan={13} className='p-4 text-center text-gray-500'>
-                  No policeman found.
-                </td>
-              </tr>
-            )}
+              {currentConstables.length === 0 && (
+                <tr>
+                  <td colSpan={13} className='p-4 text-center text-gray-500'>
+                    No policeman found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -321,7 +321,7 @@ export default function ConstablePage() {
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
           <div className='relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white p-6 shadow-lg'>
             <h3 className='mb-6 text-center text-2xl font-bold text-blue-700'>
-              Edit Constable
+              EDIT POLICEMAN
             </h3>
             {selectedConstable.image && (
               <div className='mb-6 flex justify-center'>
@@ -713,7 +713,7 @@ export default function ConstablePage() {
                 }}
                 className='rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600'
               >
-                Update Constable
+                Update Policeman
               </button>
             </div>
           </div>
@@ -784,7 +784,7 @@ export default function ConstablePage() {
                 opacity: 0,
               }}
             >
-              Constable Updated Successfully!
+              Policeman Updated Successfully!
             </h2>
 
             <button
@@ -904,7 +904,7 @@ export default function ConstablePage() {
                 opacity: 0,
               }}
             >
-              Are you sure you want to delete this constable? This action cannot
+              Are you sure you want to delete this policeman? This action cannot
               be undone.
             </p>
 
@@ -1034,7 +1034,7 @@ export default function ConstablePage() {
                 opacity: 0,
               }}
             >
-              ✅ Constable deleted successfully.
+              ✅ Policeman deleted successfully.
             </p>
 
             <button
