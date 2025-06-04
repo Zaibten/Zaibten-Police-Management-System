@@ -212,7 +212,7 @@ const Duty: React.FC = () => {
             {policeman.image && (
               <div className='my-4 flex justify-center'>
                 <img
-                  src={`data:image/jpeg;base64,${policeman.image}`}
+                  src={policeman.image}
                   alt='Policeman'
                   className='border-black-500 h-40 w-40 rounded-full border-4 object-cover shadow-md'
                 />

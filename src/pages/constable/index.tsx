@@ -280,7 +280,7 @@ export default function ConstablePage() {
                   <td className='px-4 py-3'>
                     {constable.image ? (
                       <img
-                        src={`data:image/png;base64,${constable.image}`}
+                        src={constable.image}
                         alt={`${constable.image} station`}
                         className='h-16 w-16 rounded object-cover'
                       />
@@ -326,7 +326,7 @@ export default function ConstablePage() {
             {selectedConstable.image && (
               <div className='mb-6 flex justify-center'>
                 <img
-                  src={`data:image/png;base64,${selectedConstable.image}`}
+                  src={selectedConstable.image}
                   alt='Constable'
                   className='border-black-500 h-40 w-40 rounded-full border-4 object-cover shadow-md'
                 />

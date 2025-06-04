@@ -579,7 +579,7 @@ export default function Stations() {
                   <td className='min-w-[200px] whitespace-normal px-4 py-2'>
                     {station.image ? (
                       <img
-                        src={`data:image/png;base64,${station.image}`}
+                        src={station.image}
                         alt={`${station.name} station`}
                         className='h-16 w-16 rounded object-cover'
                       />
@@ -629,7 +629,7 @@ export default function Stations() {
             {editStation.image && (
               <div className='mb-6 flex justify-center'>
                 <img
-                  src={`data:image/png;base64,${editStation.image}`}
+                  src={editStation.image}
                   alt='Station'
                   className='h-40 w-40 rounded-full border-4 border-gray-300 object-cover shadow-md'
                 />
