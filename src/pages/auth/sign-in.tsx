@@ -75,8 +75,8 @@ const handleSubmit = async (e: React.FormEvent) => {
     playsInline
     className='absolute inset-0 w-full h-full object-cover opacity-40 z-0'
   >
-    {/* <source src='/back.mp4' type='video/mp4' /> */}
-    <source src='https://asset.cloudinary.com/dvqxt7y7h/2a378fd7832ca518f96f2f3b8cbbf6fe' type='video/mp4' />
+    <source src='/back.mp4' type='video/mp4' />
+    {/* <source src='https://asset.cloudinary.com/dvqxt7y7h/2a378fd7832ca518f96f2f3b8cbbf6fe' type='video/mp4' /> */}
     Your browser does not support the video tag.
   </video>
 
