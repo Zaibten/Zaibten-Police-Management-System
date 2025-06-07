@@ -1,4 +1,4 @@
-import { IconBrandProducthunt, IconCalendarBolt, IconChecklist, IconHexagonNumber1, IconHome, IconLiveView, IconMail, IconMan, IconRecordMail, IconSettings, IconUser,} from "@tabler/icons-react"
+import { IconBrandProducthunt, IconCalendarBolt, IconChecklist, IconHexagonNumber1, IconHome, IconLiveView, IconMail, IconMan, IconSettings, IconUser,} from "@tabler/icons-react"
 import {UserCircle2Icon } from "lucide-react"
 
 
