@@ -1,5 +1,3 @@
-import React from 'react'
-
 const EmailPage = () => {
   const openGmail = () => {
     window.open('https://mail.google.com/mail/u/0/#all', '_blank', 'noopener,noreferrer')
@@ -53,31 +51,31 @@ const EmailPage = () => {
           </div>
         </section>
       </div>
+<style>{`
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.7s ease forwards;
+  }
+  .slideUp {
+    animation: slideUp 0.7s ease forwards;
+  }
+`}</style>
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes slideUp {
-          from {
-            transform: translateY(20px);
-          }
-          to {
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.7s ease forwards;
-        }
-        .slideUp {
-          animation: slideUp 0.7s ease forwards;
-        }
-      `}</style>
     </div>
   )
 }
