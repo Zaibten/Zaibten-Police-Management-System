@@ -684,9 +684,12 @@ export default function Home() {
                   <td className='border px-4 py-2 font-medium dark:border-gray-700'>
                     {getTotalDays(duty)}
                   </td>
-                  <td className='border px-4 py-2 dark:border-gray-700'>
-                    {duty.remarks ? duty.remarks : 'No remarks till now'}
-                  </td>
+                 <td className='border px-4 py-2 dark:border-gray-700'>
+  {duty.status && duty.status.includes('Active')
+    ? 'Assigned but not started yet'
+    : duty.status || 'No status till now'}
+</td>
+
                   <td
                     className='border px-4 py-4 text-center dark:border-gray-700'
                     style={{ minWidth: '130px' }}

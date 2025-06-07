@@ -132,6 +132,12 @@ const router = createBrowserRouter([
             }),
           },
           {
+            path: 'email',
+            lazy: async () => ({
+              Component: (await import('./pages/email')).default,
+            }),
+          },
+          {
             path: 'notifications',
             lazy: async () => ({
               Component: (await import('./pages/settings/notifications'))

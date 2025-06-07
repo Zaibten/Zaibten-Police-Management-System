@@ -47,27 +47,48 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const [policeLocations, setPoliceLocations] = useState<any[]>([])
-  
+  const formatDate = (dateString: string | number | Date) => {
+   if (!dateString) return 'N/A'
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
 
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/duties')
-        const data = await res.json()
-        setPoliceLocations(
-          data.map((item: any) => ({
-            ...item,
-            lat: item.xCoord,
-            lng: item.yCoord,
-          }))
-        )
-      } catch (err) {
-        console.error('Error fetching data:', err)
-      }
+useEffect(() => {
+  const fetchLocations = async () => {
+    try {
+      const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/duties')
+      const data = await res.json()
+
+      // Filter out items whose date has passed
+      const filtered = data.filter((item: any) => {
+        // Use toDate if present, otherwise dutyDate
+        const dateToCheck = item.toDate || item.dutyDate
+        if (!dateToCheck) return false // no date? exclude
+        const today = new Date()
+        const dutyDate = new Date(dateToCheck)
+        // Include only if dutyDate >= today (same day or future)
+        return dutyDate.setHours(0,0,0,0) >= today.setHours(0,0,0,0)
+      })
+
+      setPoliceLocations(
+        filtered.map((item: any) => ({
+          ...item,
+          lat: item.xCoord,
+          lng: item.yCoord,
+        }))
+      )
+    } catch (err) {
+      console.error('Error fetching data:', err)
     }
+  }
 
-    fetchLocations()
-  }, [])
+  fetchLocations()
+}, [])
+
 
   const smoothPanAndZoom = (
     map: google.maps.Map,
@@ -141,18 +162,23 @@ export default function DashboardPage() {
         },
       })
 
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-      <div>
-        <strong>${officer.name}</strong><br/>
-        <b>Status:</b> ${officer.status}<br/>
-        <b>Rank:</b> ${officer.rank || 'N/A'}<br/>
-        <b>Badge #:</b> ${officer.badgeNumber || 'N/A'}<br/>
-        <b>Duty:</b> ${officer.dutyCategory || 'N/A'}<br/>
-        <b>Contact:</b> ${officer.contact || 'N/A'}
-      </div>
-    `,
-      })
+
+
+const endDate = officer.toDate ? formatDate(officer.toDate) : formatDate(officer.dutyDate)
+
+const infoWindow = new google.maps.InfoWindow({
+  content: `
+    <div>
+      <strong>${officer.name}</strong><br/>
+      <b>Status:</b> ${officer.status && officer.status.includes('Active') ? 'Assigned but not started yet' : officer.status}<br/>
+      <b>Rank:</b> ${officer.rank || 'N/A'}<br/>
+      <b>Badge #:</b> ${officer.badgeNumber || 'N/A'}<br/>
+      <b>End Date:</b> ${endDate}<br/>
+      <b>Contact:</b> ${officer.contact || 'N/A'}
+    </div>
+  `,
+})
+
 
       marker.addListener('click', () => {
         infoWindowsRef.current.forEach((iw) => iw.close())
