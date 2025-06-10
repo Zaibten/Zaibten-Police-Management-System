@@ -59,8 +59,8 @@ const defaultValues: Partial<ProfileFormValues> = {
   email: storedEmail,
   bio: "Passionate about building user-friendly apps and delivering quality code. Always eager to learn and innovate.",
   urls: [
-    { value: 'https://github.com/MuzamilOfficial' },
-    { value: 'https://zaibteninfo.com/' },
+    { value: 'https://github.com/pms' },
+    { value: 'https://pms.com/' },
   ],
 }
 

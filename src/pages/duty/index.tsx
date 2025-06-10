@@ -500,7 +500,7 @@ const Duty: React.FC = () => {
                 opacity: 1,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             <h2
@@ -633,7 +633,7 @@ const Duty: React.FC = () => {
                 opacity: 1,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             <p

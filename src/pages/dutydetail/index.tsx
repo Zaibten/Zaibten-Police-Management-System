@@ -340,8 +340,8 @@ export default function Home() {
             .join('')}
         </div>
         <div class="footer">
-          &copy; ${new Date().getFullYear()} Zaibten Info &nbsp;&bull;&nbsp;
-          <a href="https://zaibteninfo.com/" target="_blank" rel="noopener noreferrer">zaibteninfo.com</a> &nbsp;&bull;&nbsp;
+          &copy; ${new Date().getFullYear()} PMS Info &nbsp;&bull;&nbsp;
+          <a href="https://pms.com/" target="_blank" rel="noopener noreferrer">pms.com</a> &nbsp;&bull;&nbsp;
           Phone: <a href="tel:+14244830630">(+1) 424-483-0630</a>
         </div>
       </body>
@@ -866,7 +866,7 @@ export default function Home() {
                 opacity: 0,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             <h2

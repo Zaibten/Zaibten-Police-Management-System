@@ -704,7 +704,7 @@ export default function AddStation() {
                 opacity: 0,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             {/* Success Message */}

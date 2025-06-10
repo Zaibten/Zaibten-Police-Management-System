@@ -771,7 +771,7 @@ export default function ConstablePage() {
                 opacity: 0,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             <h2

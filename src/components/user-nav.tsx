@@ -45,7 +45,7 @@ export function UserNav() {
             <div className='flex flex-col space-y-1'>
               <p className='text-sm font-medium leading-none'>PMS</p>
               <p className='text-xs leading-none text-muted-foreground'>
-                support@zaibteninfo.com
+                support@pms.com
               </p>
             </div>
           </DropdownMenuLabel>

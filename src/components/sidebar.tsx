@@ -81,7 +81,7 @@ export default function Sidebar({
               className={`flex flex-col justify-end truncate ${isCollapsed ? 'invisible w-0' : 'visible w-auto'}`}
             >
               <span className='font-medium'>PMS</span>
-              <span className='text-xs'>Zaibten Info</span>
+              <span className='text-xs'>Mangaement System</span>
             </div>
           </div>
 

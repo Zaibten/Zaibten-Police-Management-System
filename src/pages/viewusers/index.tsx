@@ -622,7 +622,7 @@ const ViewPoliceUser = () => {
                 opacity: 0,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             <h2
@@ -791,7 +791,7 @@ const ViewPoliceUser = () => {
                 opacity: 0,
               }}
             >
-              Zaibten Police Management System
+              Police Management System
             </h1>
 
             <h2
