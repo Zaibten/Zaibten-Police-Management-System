@@ -111,7 +111,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     across various tasks and locations. It enhances operational oversight,
     accountability, and resource management within police departments.”
       </p>
-      <footer className='text-sm'>contact@zaibteninfo.com</footer>
+      <footer className='text-sm'>contact@pms.com</footer>
     </blockquote>
   </div>
 </div>
