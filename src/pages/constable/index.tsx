@@ -48,7 +48,7 @@ export default function ConstablePage() {
       setLoading(true)
       setError(null)
       try {
-        const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/constablesdata')
+        const response = await fetch('https://pmsserver.vercel.app/api/constablesdata')
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
@@ -74,7 +74,7 @@ export default function ConstablePage() {
 
     try {
       const response = await fetch(
-        `https://zaibtenpoliceserver.vercel.app/api/deleteconstables/${deleteConstableId}`,
+        `https://pmsserver.vercel.app/api/deleteconstables/${deleteConstableId}`,
         {
           method: 'DELETE',
         }
@@ -112,7 +112,7 @@ export default function ConstablePage() {
 
     try {
       const response = await fetch(
-        `https://zaibtenpoliceserver.vercel.app/api/updateconstables/${selectedConstable._id}`,
+        `https://pmsserver.vercel.app/api/updateconstables/${selectedConstable._id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },

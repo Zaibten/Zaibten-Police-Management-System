@@ -246,7 +246,7 @@ export default function AddStation() {
     }
 
     axios
-      .post('https://zaibtenpoliceserver.vercel.app/api/police-station', formPayload, {
+      .post('https://pmsserver.vercel.app/api/police-station', formPayload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

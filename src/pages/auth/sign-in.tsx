@@ -35,7 +35,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true)
 
     try {
-      const response = await fetch('https://zaibtenpoliceserver.vercel.app/api/login', {
+      const response = await fetch('https://pmsserver.vercel.app/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -60,7 +60,7 @@ export default function Stations() {
     const fetchStations = async () => {
       try {
         const response = await fetch(
-          'https://zaibtenpoliceserver.vercel.app/api/getpolice-stations'
+          'https://pmsserver.vercel.app/api/getpolice-stations'
         )
         const json = await response.json()
         if (json.success) {
@@ -222,7 +222,7 @@ export default function Stations() {
 
     try {
       const response = await fetch(
-        `https://zaibtenpoliceserver.vercel.app/api/stations/${deleteStationId}`,
+        `https://pmsserver.vercel.app/api/stations/${deleteStationId}`,
         {
           method: 'DELETE',
         }
@@ -306,7 +306,7 @@ export default function Stations() {
     try {
       // ✅ API call to update the station in the backend using _id
       const response = await fetch(
-        `https://zaibtenpoliceserver.vercel.app/api/stations/${_id}`,
+        `https://pmsserver.vercel.app/api/stations/${_id}`,
         {
           method: 'PUT',
           headers: {

@@ -40,7 +40,7 @@ const Duty: React.FC = () => {
     setLoading(true)
     try {
       const response = await fetch(
-        `https://zaibtenpoliceserver.vercel.app/api/constable/${badgeNumber.trim()}`
+        `https://pmsserver.vercel.app/api/constable/${badgeNumber.trim()}`
       )
       if (!response.ok) throw new Error('Policeman not found')
       const data = await response.json()
@@ -132,7 +132,7 @@ const Duty: React.FC = () => {
     }
 
     try {
-      const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/assign-duty', {
+      const res = await fetch('https://pmsserver.vercel.app/api/assign-duty', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

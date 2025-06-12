@@ -60,7 +60,7 @@ export default function DashboardPage() {
 useEffect(() => {
   const fetchLocations = async () => {
     try {
-      const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/duties')
+      const res = await fetch('https://pmsserver.vercel.app/api/duties')
       const data = await res.json()
 
       // Filter out items whose date has passed

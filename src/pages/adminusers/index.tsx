@@ -36,7 +36,7 @@ const AddPoliceUser = () => {
     setMessage('')
 
     try {
-      const res = await fetch('https://zaibtenpoliceserver.vercel.app/api/police-users', {
+      const res = await fetch('https://pmsserver.vercel.app/api/police-users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ batchNo, password }),
